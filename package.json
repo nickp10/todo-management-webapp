@@ -22,21 +22,36 @@
     "build-debug": "npm run compile-debug && npm run copy-vue-debug",
     "compile": "tsc",
     "compile-debug": "tsc --sourceMap --outDir debug/",
-    "copy-assets": "copyfiles -f node_modules/jquery/dist/jquery.min.js src/assets && copyfiles -f node_modules/vue/dist/vue.min.js src/assets",
+    "copy-assets": "npm run copy-assets-bootstrap-css && npm run copy-assets-bootstrap-js && npm run copy-assets-jquery && npm run copy-assets-popper && npm run copy-assets-vue",
+    "copy-assets-bootstrap-css": "copyfiles -f node_modules/bootstrap/dist/css/*.min.css src/assets/css",
+    "copy-assets-bootstrap-js": "copyfiles -f node_modules/bootstrap/dist/js/bootstrap.min.js src/assets/js",
+    "copy-assets-jquery": "copyfiles -f node_modules/jquery/dist/jquery.min.js src/assets/js",
+    "copy-assets-popper": "copyfiles -f node_modules/popper.js/dist/popper.min.js src/assets/js",
+    "copy-assets-vue": "copyfiles -f node_modules/vue/dist/vue.min.js src/assets/js",
     "copy-vue": "copyfiles -u 1 src/**/*.vue build && copyfiles -u 1 src/assets/** build",
     "copy-vue-debug": "copyfiles -u 1 src/**/*.vue debug && copyfiles -u 1 src/assets/** debug",
     "prepare": "npm run copy-assets && npm run build"
   },
   "dependencies": {
     "argv": "0.0.2",
+    "body-parser": "^1.18.2",
+    "bootstrap": "^4.0.0",
+    "crypto-js": "^3.1.9-1",
     "express": "^4.16.2",
     "express-vue": "^4.0.14",
-    "jquery": "^3.3.1"
+    "jquery": "^3.3.1",
+    "lowdb": "^1.0.0",
+    "popper.js": "^1.12.9",
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "@types/argv": "0.0.4",
+    "@types/body-parser": "^1.16.8",
+    "@types/crypto-js": "^3.1.38",
     "@types/express": "^4.11.1",
+    "@types/lowdb": "^1.0.0",
     "@types/node": "^9.4.1",
+    "@types/uuid": "^3.4.3",
     "copyfiles": "^1.2.0",
     "typescript": "^2.7.1"
   }
