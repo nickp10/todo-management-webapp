@@ -5,12 +5,14 @@ import * as bodyParser from "body-parser";
 import * as crypto from "crypto-js";
 import { DBSchema } from "./interfaces";
 import * as express from "express";
+import * as expressSession from "express-session";
 import expressVue = require("express-vue");
 import * as FileAsync from "lowdb/adapters/FileAsync";
 import login from "./routes/login";
 import * as lowdb from "lowdb";
 import * as path from "path";
 import * as uuid4 from "uuid/v4";
+const MemoryStore = require("memorystore")(expressSession);
 
 const vueOptions = {
     rootPath: path.join(__dirname, "routes"),
@@ -58,6 +60,14 @@ lowdb(dbAdapter).then((db) => {
     };
     db.defaults(defaults).write();
     const app = express();
+    app.use(expressSession({
+        store: new MemoryStore({
+            checkPeriod: 86400000 // 24 hours
+        }),
+        secret: "todo-management-webapp",
+        resave: false,
+        saveUninitialized: false
+    }));
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use((<any>expressVue).init(vueOptions));
     app.use("/assets", express.static(path.join(__dirname, "assets")));

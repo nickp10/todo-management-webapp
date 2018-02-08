@@ -13,6 +13,9 @@ export default (router: express.Express, db: lowdb.Lowdb<DBSchema, lowdb.Adapter
                 title: "Todo Manager - Login"
             }
         };
+        if (req.session.user) {
+            console.log(req.session.user.username);
+        }
         (<any>res).renderVue("login", data, vueOptions);
     });
     router.post("/", (req, res) => {
@@ -24,7 +27,8 @@ export default (router: express.Express, db: lowdb.Lowdb<DBSchema, lowdb.Adapter
         if (!user) {
             res.status(403).send("Not authenticated");
         } else {
-            res.status(200).send("Hi");
+            req.session.user = user;
+            res.status(200).send(`Hi ${user.username}`);
         }
     });
 };
