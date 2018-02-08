@@ -18,18 +18,26 @@
   },
   "homepage": "https://github.com/nickp10/todo-management-webapp#readme",
   "scripts": {
+    "build": "npm run compile && npm run copy-vue",
+    "build-debug": "npm run compile-debug && npm run copy-vue-debug",
     "compile": "tsc",
     "compile-debug": "tsc --sourceMap --outDir debug/",
-    "prepare": "npm run compile"
+    "copy-assets": "copyfiles -f node_modules/jquery/dist/jquery.min.js src/assets && copyfiles -f node_modules/vue/dist/vue.min.js src/assets",
+    "copy-vue": "copyfiles -u 1 src/**/*.vue build && copyfiles -u 1 src/assets/** build",
+    "copy-vue-debug": "copyfiles -u 1 src/**/*.vue debug && copyfiles -u 1 src/assets/** debug",
+    "prepare": "npm run copy-assets && npm run build"
   },
   "dependencies": {
     "argv": "0.0.2",
     "express": "^4.16.2",
-    "typescript": "^2.7.1"
+    "express-vue": "^4.0.14",
+    "jquery": "^3.3.1"
   },
   "devDependencies": {
     "@types/argv": "0.0.4",
     "@types/express": "^4.11.1",
-    "@types/node": "^9.4.1"
+    "@types/node": "^9.4.1",
+    "copyfiles": "^1.2.0",
+    "typescript": "^2.7.1"
   }
 }
