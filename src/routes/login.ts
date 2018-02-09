@@ -2,33 +2,40 @@ import * as crypto from "crypto-js";
 import { DBSchema } from "../interfaces";
 import * as express from "express";
 import * as lowdb from "lowdb";
+import { homeGet } from "./home";
+
+export function loginGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    if (req.session.user) {
+        homeGet(req, res, db);
+        return;
+    }
+    const data = {};
+    const vueOptions = {
+        head: {
+            title: "Todo Manager - Login"
+        }
+    };
+    (<any>res).renderVue("login", data, vueOptions);
+};
+
+export function loginPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    if (req.session.user) {
+        homeGet(req, res, db);
+        return;
+    }
+    const findUser = {
+        username: req.body.username,
+        password: crypto.SHA256(req.body.password).toString()
+    };
+    const user = db.get("users").find(findUser).value();
+    if (!user) {
+        res.status(403).send("Not authenticated");
+    } else {
+        req.session.user = user;
+        homeGet(req, res, db);
+    }
+}
 
 export default (router: express.Express, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) => {
-    router.get("/", (req, res) => {
-        const data = {
-            title: "Login"
-        };
-        const vueOptions = {
-            head: {
-                title: "Todo Manager - Login"
-            }
-        };
-        if (req.session.user) {
-            console.log(req.session.user.username);
-        }
-        (<any>res).renderVue("login", data, vueOptions);
-    });
-    router.post("/", (req, res) => {
-        const findUser = {
-            username: req.body.username,
-            password: crypto.SHA256(req.body.password).toString()
-        };
-        const user = db.get("users").find(findUser).value();
-        if (!user) {
-            res.status(403).send("Not authenticated");
-        } else {
-            req.session.user = user;
-            res.status(200).send(`Hi ${user.username}`);
-        }
-    });
+    
 };

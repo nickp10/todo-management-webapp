@@ -16,11 +16,12 @@ export interface Task {
     id: string;
     title: string;
     description: string;
-    dateStarted: Date;
-    dateCompleted: Date;
-    deadline: Date;
-    notes: string;
-    assignee: string;
+    dateStarted?: Date;
+    dateCompleted?: Date;
+    deadline?: Date;
+    notes?: string;
+    assignee?: string;
+    status: string;
 }
 
 export interface Field {
