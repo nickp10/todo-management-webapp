@@ -55,6 +55,7 @@
     "moment": "^2.20.1",
     "popper.js": "^1.13.0",
     "tempusdominus-bootstrap-4": "^5.0.0-alpha15",
+    "tempusdominus-core": "^5.0.0-alpha12",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
