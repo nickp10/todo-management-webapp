@@ -82,64 +82,9 @@ lowdb(dbAdapter).then((db) => {
                 isAdmin: true,
                 isRoot: true,
                 maxTasks: 100
-            },
-            {
-                id: uuid4(),
-                username: "train1",
-                password: crypto.SHA256("train1").toString(),
-                isAdmin: true,
-                isRoot: false,
-                maxTasks: 100
-            },
-            {
-                id: uuid4(),
-                username: "train2",
-                password: crypto.SHA256("train2").toString(),
-                isAdmin: false,
-                isRoot: false,
-                maxTasks: 100
             }
         ],
-        tasks: [
-            {
-                id: uuid4(),
-                title: "First Task",
-                deadline: new Date(),
-                description: "Description for the first task to accomplish",
-                assignee: id,
-                status: "Not Started",
-                notes: "These are some awesome notes"
-            },
-            {
-                id: uuid4(),
-                title: "Second Task",
-                description: "Description for the second task to accomplish",
-                assignee: id,
-                status: "Not Started"
-            },
-            {
-                id: uuid4(),
-                title: "Third Task",
-                deadline: new Date(),
-                description: "Description for the third task to accomplish",
-                assignee: id,
-                status: "Completed",
-                notes: "These are some awesome notes"
-            },
-            {
-                id: uuid4(),
-                title: "Fourth Task",
-                description: "Description for the fourth task to accomplish",
-                assignee: id,
-                status: "Not Started"
-            },
-            {
-                id: uuid4(),
-                title: "Fifth Task",
-                description: "Description for the fith task to accomplish",
-                status: "Started"
-            }
-        ],
+        tasks: [],
         customFields: []
     };
     db.defaults(defaults).write();
