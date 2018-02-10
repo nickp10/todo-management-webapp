@@ -13,7 +13,7 @@ import * as path from "path";
 import * as uuid4 from "uuid/v4";
 import { adminCustomFieldsGet, adminCustomFieldsPost, adminCustomFieldsDelete } from "./routes/admin/customFields";
 import { adminTasksEditGet, adminTasksEditPost } from "./routes/admin/editTask";
-import { adminTasksGet, adminTasksDelete } from "./routes/admin/tasks";
+import { adminTasksGet, adminTasksDelete, adminTasksReopen } from "./routes/admin/tasks";
 import { adminUsersEditGet, adminUsersEditPost } from "./routes/admin/editUser";
 import { adminUsersGet, adminUsersDelete } from "./routes/admin/users";
 import { completeGet } from "./routes/complete";
@@ -167,6 +167,7 @@ lowdb(dbAdapter).then((db) => {
     app.get("/admin/tasks/delete", (req, res) => adminTasksDelete(req, res, db));
     app.get("/admin/tasks/edit", (req, res) => adminTasksEditGet(req, res, db));
     app.post("/admin/tasks/edit", (req, res) => adminTasksEditPost(req, res, db));
+    app.get("/admin/tasks/reopen", (req, res) => adminTasksReopen(req, res, db));
     app.get("/admin/users", (req, res) => adminUsersGet(req, res, db));
     app.get("/admin/users/delete", (req, res) => adminUsersDelete(req, res, db));
     app.get("/admin/users/edit", (req, res) => adminUsersEditGet(req, res, db));

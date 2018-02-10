@@ -38,3 +38,16 @@ export function adminTasksDelete(req: express.Request, res: express.Response, db
     db.get("tasks").remove({ id: req.query.id }).write();
     adminTasksGet(req, res, db);
 };
+
+export function adminTasksReopen(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    if (!req.session.user) {
+        loginGet(req, res, db);
+        return;
+    }
+    if (!req.session.user.isAdmin) {
+        homeGet(req, res, db);
+        return;
+    }
+    db.get("tasks").find({ id: req.query.id }).assign({ dateStarted: "", dateCompleted: "", status: "Not Started" }).write();
+    adminTasksGet(req, res, db);
+};

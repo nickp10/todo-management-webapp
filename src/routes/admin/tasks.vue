@@ -29,6 +29,7 @@
                         {{task | formatCustomField(customField)}}
                     </div>
                     <div class="bottom">
+                        <a v-if="task.status === 'Completed'" v-bind:href="'/admin/tasks/reopen?id=' + task.id" class="btn btn-sm btn-warning">Reopen Task</a>
                         <a v-bind:href="'/admin/tasks/edit?id=' + task.id" class="btn btn-sm btn-primary">Edit Task</a>
                         <a v-bind:href="'/admin/tasks/delete?id=' + task.id" class="btn btn-sm btn-danger">Delete Task</a>
                     </div>
