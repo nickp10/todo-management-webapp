@@ -10,6 +10,7 @@
         <br />
         <div class="text-center">
             <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
+            <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
         </div>
         <div class="card-deck text-center">
             <div v-for="task in tasks" v-bind:key="task.id" class="card mb-4 box-shadow">
@@ -36,8 +37,9 @@
                 </div>
             </div>
         </div>
-        <div class="text-center">
+        <div v-if="tasks && tasks.length" class="text-center">
             <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
+            <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
         </div>
     </div>
 </template>
