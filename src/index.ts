@@ -13,6 +13,8 @@ import * as path from "path";
 import * as uuid4 from "uuid/v4";
 import { adminTasksEditGet, adminTasksEditPost } from "./routes/admin/editTask";
 import { adminTasksGet, adminTasksDelete } from "./routes/admin/tasks";
+import { adminUsersEditGet, adminUsersEditPost } from "./routes/admin/editUser";
+import { adminUsersGet, adminUsersDelete } from "./routes/admin/users";
 import { completeGet } from "./routes/complete";
 import { homeGet } from "./routes/home";
 import { loginGet, loginPost } from "./routes/login";
@@ -76,6 +78,22 @@ lowdb(dbAdapter).then((db) => {
                 password: crypto.SHA256("admin").toString(),
                 isAdmin: true,
                 isRoot: true,
+                maxTasks: 100
+            },
+            {
+                id: uuid4(),
+                username: "train1",
+                password: crypto.SHA256("train1").toString(),
+                isAdmin: true,
+                isRoot: false,
+                maxTasks: 100
+            },
+            {
+                id: uuid4(),
+                username: "train2",
+                password: crypto.SHA256("train2").toString(),
+                isAdmin: false,
+                isRoot: false,
                 maxTasks: 100
             }
         ],
@@ -145,6 +163,10 @@ lowdb(dbAdapter).then((db) => {
     app.get("/admin/tasks/delete", (req, res) => adminTasksDelete(req, res, db));
     app.get("/admin/tasks/edit", (req, res) => adminTasksEditGet(req, res, db));
     app.post("/admin/tasks/edit", (req, res) => adminTasksEditPost(req, res, db));
+    app.get("/admin/users", (req, res) => adminUsersGet(req, res, db));
+    app.get("/admin/users/delete", (req, res) => adminUsersDelete(req, res, db));
+    app.get("/admin/users/edit", (req, res) => adminUsersEditGet(req, res, db));
+    app.post("/admin/users/edit", (req, res) => adminUsersEditPost(req, res, db));
     app.listen(args.port, () => {
         console.log(`Server has started on port ${args.port}.`);
     });

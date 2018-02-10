@@ -9,7 +9,7 @@ export function loginGet(req: express.Request, res: express.Response, db: lowdb.
         homeGet(req, res, db);
         return;
     }
-    const data = {};
+    const data = { error: "" };
     const vueOptions = {
         head: {
             title: "Todo Manager - Login"
@@ -29,7 +29,13 @@ export function loginPost(req: express.Request, res: express.Response, db: lowdb
     };
     const user = db.get("users").find(findUser).value();
     if (!user) {
-        res.status(403).send("Not authenticated");
+        const data = { error: "Invalid username or password" };
+        const vueOptions = {
+            head: {
+                title: "Todo Manager - Login"
+            }
+        };
+        (<any>res).renderVue("login", data, vueOptions);
     } else {
         req.session.user = user;
         homeGet(req, res, db);
