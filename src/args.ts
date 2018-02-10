@@ -17,7 +17,7 @@ class Args {
 
 	validate(argDBPath: string, argPort: number): void {
         // Validate dbPath
-        this.dbPath = argDBPath || "TodoDB.json";
+        this.dbPath = argDBPath || utils.getDBPath();
         if (!this.dbPath) {
             console.error("The -db or --dbPath argument must be supplied.");
             process.exit();

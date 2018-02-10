@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "argv": "0.0.2",
+    "babel-preset-es2015": "^6.24.1",
     "body-parser": "^1.18.2",
     "bootstrap": "^4.0.0",
     "crypto-js": "^3.1.9-1",
@@ -50,6 +51,7 @@
     "jquery": "^3.3.1",
     "lowdb": "^1.0.0",
     "memorystore": "^1.6.0",
+    "mkdirp": "^0.5.1",
     "moment": "^2.20.1",
     "popper.js": "^1.13.0",
     "tempusdominus-bootstrap-4": "^5.0.0-alpha15",
@@ -63,6 +65,7 @@
     "@types/express-fileupload": "^0.1.1",
     "@types/express-session": "^1.15.7",
     "@types/lowdb": "^1.0.0",
+    "@types/mkdirp": "^0.5.2",
     "@types/node": "^9.4.4",
     "@types/uuid": "^3.4.3",
     "copyfiles": "^1.2.0",

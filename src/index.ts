@@ -11,6 +11,7 @@ import expressVue = require("express-vue");
 import * as FileAsync from "lowdb/adapters/FileAsync";
 import * as lowdb from "lowdb";
 import * as path from "path";
+import * as process from "process";
 import * as uuid4 from "uuid/v4";
 import { adminCustomFieldsGet, adminCustomFieldsPost, adminCustomFieldsDelete } from "./routes/admin/customFields";
 import { adminTasksEditGet, adminTasksEditPost } from "./routes/admin/editTask";
@@ -26,6 +27,7 @@ import { saveNotesPost } from "./routes/saveNotes";
 import { startGet } from "./routes/start";
 const MemoryStore = require("memorystore")(expressSession);
 
+process.chdir(path.join(__dirname, ".."));
 const vueOptions = {
     rootPath: path.join(__dirname, "routes"),
     vue: {
