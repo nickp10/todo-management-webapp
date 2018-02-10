@@ -7,7 +7,7 @@ import { adminTasksGet } from "./tasks";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-export function adminTasksEditGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+function adminTasksEditGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, taskId: string, error?: string) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -16,17 +16,21 @@ export function adminTasksEditGet(req: express.Request, res: express.Response, d
         homeGet(req, res, db);
         return;
     }
-    const task: any = db.get("tasks").find({ id: req.query.id }).value() || { };
+    const task: any = db.get("tasks").find({ id: taskId }).value() || { };
     task.assignee = task.assignee || "";
     const users = db.get("users").value();
     const customFields = db.get("customFields").value();
-    const data = { task: task, users: users, customFields: customFields };
+    const data = { task: task, users: users, customFields: customFields, error: error || "" };
     const vueOptions = {
         head: {
             title: "Todo Manager Admin - Tasks"
         }
     };
     (<any>res).renderVue("admin/editTask", data, vueOptions);
+}
+
+export function adminTasksEditGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    adminTasksEditGetHelper(req, res, db, req.query.id);
 };
 
 export function adminTasksEditPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
@@ -39,11 +43,23 @@ export function adminTasksEditPost(req: express.Request, res: express.Response, 
         return;
     }
     const existingTask = db.get("tasks").find({ id: req.query.id }).value();
+    let error = "";
+    let assigneeValue = req.body.assignee;
+    const assignee = db.get("users").find({ id: assigneeValue }).value();
+    if (assignee) {
+        const assigneeTasks = db.get("tasks").filter({ assignee: assignee.id }).value();
+        if (!existingTask || existingTask.assignee !== assignee.id) {
+            if (assignee.maxTasks === assigneeTasks.length) {
+                error = "The assigned user already has the maximum number of tasks assigned to them.";
+                assigneeValue = existingTask ? existingTask.assignee : undefined;
+            }
+        }
+    }
     const updatedTask: Task = {
         id: existingTask ? existingTask.id : uuid4(),
         title: req.body.title,
         description: req.body.description,
-        assignee: req.body.assignee,
+        assignee: assigneeValue,
         deadline: moment(req.body.deadline).toDate(),
         status: existingTask ? existingTask.status : "Not Started"
     };
@@ -57,5 +73,9 @@ export function adminTasksEditPost(req: express.Request, res: express.Response, 
     } else {
         db.get("tasks").push(updatedTask).write();
     }
-    adminTasksGet(req, res, db);
+    if (error) {
+        adminTasksEditGetHelper(req, res, db, updatedTask.id, error);
+    } else {
+        adminTasksGet(req, res, db);
+    }
 };

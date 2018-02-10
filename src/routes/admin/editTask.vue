@@ -51,6 +51,7 @@
                                 <input v-model="task[customField.id]" type="text" v-bind:id="customField.id" v-bind:name="customField.id" class="form-control" v-bind:placeholder="customField.name" />
                             </div>
                         </div>
+                        <div v-if="error" class="alert alert-danger">{{error}}</div>
                         <div class="text-center">
                             <input type="submit" class="btn btn-primary" value="Save" />
                         </div>
