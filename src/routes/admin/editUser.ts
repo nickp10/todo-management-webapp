@@ -2,6 +2,7 @@ import { DBSchema, User } from "../../interfaces";
 import * as crypto from "crypto-js";
 import * as express from "express";
 import * as lowdb from "lowdb";
+import * as utils from "../../utils";
 import * as uuid4 from "uuid/v4";
 import { adminUsersGet } from "./users";
 import { homeGet } from "../home";
@@ -60,7 +61,7 @@ export function adminUsersEditPost(req: express.Request, res: express.Response, 
         id: existingUser ? existingUser.id : uuid4(),
         username: req.body.username,
         password: password,
-        maxTasks: parseInt(req.body.maxTasks) || 100,
+        maxTasks: utils.coerceInt(req.body.maxTasks) || 100,
         isAdmin: !!req.body.isAdmin,
         isRoot: false
     };
