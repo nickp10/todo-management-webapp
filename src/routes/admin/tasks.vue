@@ -2,10 +2,14 @@
     <div class="container">
         <div class="text-center">
             <a href="/admin/tasks" class="btn btn-outline-success">Tasks</a>
-            <a href="/admin/template" class="btn btn-outline-success">Task Template</a>
+            <a href="/admin/customFields" class="btn btn-outline-success">Custom Fields</a>
             <a href="/admin/users" class="btn btn-outline-success">Users</a>
             <a href="/" class="btn btn-outline-primary">Home</a>
             <a href="/logout" class="btn btn-outline-primary">Logout</a>
+        </div>
+        <br />
+        <div class="text-center">
+            <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
         </div>
         <div class="card-deck text-center">
             <div v-for="task in tasks" v-bind:key="task.id" class="card mb-4 box-shadow">
@@ -15,9 +19,15 @@
                 <div class="card-body">
                     <p class="text-left">{{task.description}}</p>
                     <div class="text-left"><b>Assigned To: </b>{{task | formatUser(users)}}</div>
-                    <div class="text-left"><b>Deadline: </b>{{task | formatDeadline}}</div>
+                    <div class="text-left"><b>Deadline: </b>{{task.deadline | formatDate('No deadline set')}}</div>
+                    <div class="text-left"><b>Started: </b>{{task.dateStarted | formatDate('Not yet started')}}</div>
+                    <div class="text-left"><b>Completed: </b>{{task.dateCompleted | formatDate('Not yet completed')}}</div>
                     <div class="text-left"><b>Status: </b>{{task.status}}</div>
                     <div class="text-left"><b>Notes: </b>{{task.notes}}</div>
+                    <div v-for="customField in customFields" class="text-left" v-bind:key="customField.id">
+                        <b>{{customField.name}}: </b>
+                        {{task | formatCustomField(customField)}}
+                    </div>
                     <div class="bottom">
                         <a v-bind:href="'/admin/tasks/edit?id=' + task.id" class="btn btn-sm btn-primary">Edit Task</a>
                         <a v-bind:href="'/admin/tasks/delete?id=' + task.id" class="btn btn-sm btn-danger">Delete Task</a>
@@ -38,11 +48,11 @@ export default {
         return { }
     },
     filters: {
-        formatDeadline: function(task) {
-            if (!task || !task.deadline) {
-                return "No deadline set";
+        formatDate: function(date, failString) {
+            if (!date) {
+                return failString;
             }
-            return moment(task.deadline).format("MM/DD/YYYY hh:mm:ss A");
+            return moment(date).format("MM/DD/YYYY hh:mm:ss A");
         },
         formatUser: function(task, users) {
             if (!task || !task.assignee) {
@@ -56,6 +66,12 @@ export default {
                 return "Unassigned";
             }
             return user.username;
+        },
+        formatCustomField: function(task, customField) {
+            if (!task || !customField) {
+                return "";
+            }
+            return task[customField.id];
         }
     }
 }

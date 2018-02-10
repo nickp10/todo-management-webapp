@@ -2,7 +2,7 @@
     <div class="container">
         <div class="text-center">
             <a href="/admin/tasks" class="btn btn-outline-success">Tasks</a>
-            <a href="/admin/template" class="btn btn-outline-success">Task Template</a>
+            <a href="/admin/customFields" class="btn btn-outline-success">Custom Fields</a>
             <a href="/admin/users" class="btn btn-outline-success">Users</a>
             <a href="/" class="btn btn-outline-primary">Home</a>
             <a href="/logout" class="btn btn-outline-primary">Logout</a>
@@ -17,13 +17,13 @@
                         <div class="form-group row">
                             <label for="title" class="col-sm-2 col-form-label">Title:</label>
                             <div class="col-sm-10">
-                                <input v-model="task.title" type="text" id="title" name="title" class="form-control" placeholder="Title" required autofocus>
+                                <input v-model="task.title" type="text" id="title" name="title" class="form-control" placeholder="Title" required autofocus />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="description" class="col-sm-2 col-form-label">Description:</label>
                             <div class="col-sm-10">
-                                <input v-model="task.description" type="text" id="description" name="description" class="form-control" placeholder="Description" required>
+                                <input v-model="task.description" type="text" id="description" name="description" class="form-control" placeholder="Description" required />
                             </div>
                         </div>
                         <div class="form-group row">
@@ -43,6 +43,12 @@
                                 <div class="input-group-append" data-target="#deadline" data-toggle="datetimepicker">
                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                 </div>
+                            </div>
+                        </div>
+                        <div v-for="customField in customFields" class="form-group row" v-bind:key="customField.id">
+                            <label for="title" class="col-sm-2 col-form-label">{{customField.name}}:</label>
+                            <div class="col-sm-10">
+                                <input v-model="task[customField.id]" type="text" v-bind:id="customField.id" v-bind:name="customField.id" class="form-control" v-bind:placeholder="customField.name" />
                             </div>
                         </div>
                         <div class="text-center">

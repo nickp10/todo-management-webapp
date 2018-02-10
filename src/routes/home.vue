@@ -11,7 +11,11 @@
                 </div>
                 <div class="card-body">
                     <p class="text-left">{{task.description}}</p>
-                    <p class="text-left"><b>Deadline: </b>{{task | formatDeadline}}</p>
+                    <div class="text-left"><b>Deadline: </b>{{task | formatDeadline}}</div>
+                    <div v-for="customField in customFields" class="text-left" v-bind:key="customField.id">
+                        <b>{{customField.name}}: </b>
+                        {{task | formatCustomField(customField)}}
+                    </div>
                     <div class="text-left">
                         <b>Notes:</b>
                         <form v-bind:action="'/saveNotes?id=' + task.id" method="POST">
@@ -43,6 +47,12 @@ export default {
                 return "No deadline set";
             }
             return moment(task.deadline).format("MM/DD/YYYY hh:mm:ss A");
+        },
+        formatCustomField: function(task, customField) {
+            if (!task || !customField) {
+                return "";
+            }
+            return task[customField.id];
         }
     }
 }

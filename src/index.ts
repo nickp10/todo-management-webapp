@@ -11,6 +11,7 @@ import * as FileAsync from "lowdb/adapters/FileAsync";
 import * as lowdb from "lowdb";
 import * as path from "path";
 import * as uuid4 from "uuid/v4";
+import { adminCustomFieldsGet, adminCustomFieldsPost, adminCustomFieldsDelete } from "./routes/admin/customFields";
 import { adminTasksEditGet, adminTasksEditPost } from "./routes/admin/editTask";
 import { adminTasksGet, adminTasksDelete } from "./routes/admin/tasks";
 import { adminUsersEditGet, adminUsersEditPost } from "./routes/admin/editUser";
@@ -160,6 +161,9 @@ lowdb(dbAdapter).then((db) => {
     app.get("/complete", (req, res) => completeGet(req, res, db));
     app.post("/saveNotes", (req, res) => saveNotesPost(req, res, db));
     app.get("/admin/tasks", (req, res) => adminTasksGet(req, res, db));
+    app.get("/admin/customFields", (req, res) => adminCustomFieldsGet(req, res, db));
+    app.post("/admin/customFields", (req, res) => adminCustomFieldsPost(req, res, db));
+    app.get("/admin/customFields/delete", (req, res) => adminCustomFieldsDelete(req, res, db));
     app.get("/admin/tasks/delete", (req, res) => adminTasksDelete(req, res, db));
     app.get("/admin/tasks/edit", (req, res) => adminTasksEditGet(req, res, db));
     app.post("/admin/tasks/edit", (req, res) => adminTasksEditPost(req, res, db));

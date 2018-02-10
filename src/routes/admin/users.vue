@@ -2,7 +2,7 @@
     <div class="container">
         <div class="text-center">
             <a href="/admin/tasks" class="btn btn-outline-success">Tasks</a>
-            <a href="/admin/template" class="btn btn-outline-success">Task Template</a>
+            <a href="/admin/customFields" class="btn btn-outline-success">Custom Fields</a>
             <a href="/admin/users" class="btn btn-outline-success">Users</a>
             <a href="/" class="btn btn-outline-primary">Home</a>
             <a href="/logout" class="btn btn-outline-primary">Logout</a>
@@ -13,7 +13,7 @@
                     <h4 class="my-0 font-weight-normal">Users</h4>
                 </div>
                 <div class="card-body">
-                    <table class="table table-sm table-hover">
+                    <table class="table table-sm table-hover table-bordered">
                         <thead>
                             <tr>
                                 <th scope="col">Username</th>
@@ -34,17 +34,16 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div class="text-center">
+                        <a href="/admin/users/edit" class="btn btn-primary">Add User</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="text-center">
-            <a href="/admin/users/edit" class="btn btn-primary">Add User</a>
         </div>
     </div>
 </template>
 
 <script>
-var moment = require("moment");
 export default {
     data: function () {
         return { }

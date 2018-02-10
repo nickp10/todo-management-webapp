@@ -19,7 +19,8 @@ export function adminTasksEditGet(req: express.Request, res: express.Response, d
     const task: any = db.get("tasks").find({ id: req.query.id }).value() || { };
     task.assignee = task.assignee || "";
     const users = db.get("users").value();
-    const data = { task: task, users: users };
+    const customFields = db.get("customFields").value();
+    const data = { task: task, users: users, customFields: customFields };
     const vueOptions = {
         head: {
             title: "Todo Manager Admin - Tasks"
@@ -46,6 +47,11 @@ export function adminTasksEditPost(req: express.Request, res: express.Response, 
         deadline: moment(req.body.deadline).toDate(),
         status: existingTask ? existingTask.status : "Not Started"
     };
+    const customFields = db.get("customFields").value();
+    for (let i = 0; i < customFields.length; i++) {
+        const customField = customFields[i];
+        updatedTask[customField.id] = req.body[customField.id];
+    }
     if (existingTask) {
         db.get("tasks").find({ id: req.query.id }).assign(updatedTask).write();
     } else {

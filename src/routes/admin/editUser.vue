@@ -2,7 +2,7 @@
     <div class="container">
         <div class="text-center">
             <a href="/admin/tasks" class="btn btn-outline-success">Tasks</a>
-            <a href="/admin/template" class="btn btn-outline-success">Task Template</a>
+            <a href="/admin/customFields" class="btn btn-outline-success">Custom Fields</a>
             <a href="/admin/users" class="btn btn-outline-success">Users</a>
             <a href="/" class="btn btn-outline-primary">Home</a>
             <a href="/logout" class="btn btn-outline-primary">Logout</a>

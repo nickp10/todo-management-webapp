@@ -1,7 +1,6 @@
 import { DBSchema } from "../../interfaces";
 import * as express from "express";
 import * as lowdb from "lowdb";
-import * as moment from "moment";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 

@@ -13,8 +13,9 @@ export function homeGet(req: express.Request, res: express.Response, db: lowdb.L
     if (!task) {
         task = db.get("tasks").find({ assignee: req.session.user.id, status: "Not Started" }).value();
     }
+    const customFields = db.get("customFields").value();
     const isAdmin = req.session.user.isAdmin;
-    const data = { task: task, isAdmin: isAdmin };
+    const data = { task: task, isAdmin: isAdmin, customFields: customFields };
     const vueOptions = {
         head: {
             title: "Todo Manager - Home"

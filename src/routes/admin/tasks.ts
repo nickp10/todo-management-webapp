@@ -16,7 +16,8 @@ export function adminTasksGet(req: express.Request, res: express.Response, db: l
     }
     const tasks = db.get("tasks").sortBy("status").value().reverse();
     const users = db.get("users").value();
-    const data = { tasks: tasks, users: users };
+    const customFields = db.get("customFields").value();
+    const data = { tasks: tasks, users: users, customFields: customFields };
     const vueOptions = {
         head: {
             title: "Todo Manager Admin - Tasks"
