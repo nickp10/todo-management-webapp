@@ -1,7 +1,8 @@
 <template>
     <div class="container">
         <div class="text-right">
-            <a href="./logout" class="btn btn-sm btn-outline-primary">Logout</a>
+            <a v-if="isAdmin" href="/admin/tasks" class="btn btn-outline-success">Admin</a>
+            <a href="/logout" class="btn btn-outline-primary">Logout</a>
         </div>
         <div class="card-deck text-center">
             <div class="card mb-4 box-shadow">

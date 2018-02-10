@@ -11,6 +11,8 @@ import * as FileAsync from "lowdb/adapters/FileAsync";
 import * as lowdb from "lowdb";
 import * as path from "path";
 import * as uuid4 from "uuid/v4";
+import { adminTasksEditGet, adminTasksEditPost } from "./routes/admin/editTask";
+import { adminTasksGet, adminTasksDelete } from "./routes/admin/tasks";
 import { completeGet } from "./routes/complete";
 import { homeGet } from "./routes/home";
 import { loginGet, loginPost } from "./routes/login";
@@ -24,25 +26,37 @@ const vueOptions = {
     vue: {
         head: {
             meta: [{
-                script: "assets/js/jquery.min.js"
+                script: "/assets/js/jquery.min.js"
             },
             {
-                script: "assets/js/popper.min.js"
+                script: "/assets/js/moment.min.js"
             },
             {
-                script: "assets/js/vue.min.js"
+                script: "/assets/js/popper.min.js"
             },
             {
-                script: "assets/js/bootstrap.min.js"
+                script: "/assets/js/vue.min.js"
             },
             {
-                style: "assets/css/bootstrap.min.css"
+                script: "/assets/js/bootstrap.min.js"
             },
             {
-                style: "assets/css/bootstrap-grid.min.css"
+                script: "/assets/js/tempusdominus-bootstrap-4.min.js"
             },
             {
-                style: "assets/css/bootstrap-reboot.min.css"
+                style: "/assets/css/bootstrap.min.css"
+            },
+            {
+                style: "/assets/css/bootstrap-grid.min.css"
+            },
+            {
+                style: "/assets/css/bootstrap-reboot.min.css"
+            },
+            {
+                style: "/assets/css/font-awesome.min.css"
+            },
+            {
+                style: "/assets/css/tempusdominus-bootstrap-4.min.css"
             },
             {
                 name: "viewport",
@@ -61,6 +75,7 @@ lowdb(dbAdapter).then((db) => {
                 username: "admin",
                 password: crypto.SHA256("admin").toString(),
                 isAdmin: true,
+                isRoot: true,
                 maxTasks: 100
             }
         ],
@@ -80,6 +95,28 @@ lowdb(dbAdapter).then((db) => {
                 description: "Description for the second task to accomplish",
                 assignee: id,
                 status: "Not Started"
+            },
+            {
+                id: uuid4(),
+                title: "Third Task",
+                deadline: new Date(),
+                description: "Description for the third task to accomplish",
+                assignee: id,
+                status: "Completed",
+                notes: "These are some awesome notes"
+            },
+            {
+                id: uuid4(),
+                title: "Fourth Task",
+                description: "Description for the fourth task to accomplish",
+                assignee: id,
+                status: "Not Started"
+            },
+            {
+                id: uuid4(),
+                title: "Fifth Task",
+                description: "Description for the fith task to accomplish",
+                status: "Started"
             }
         ],
         customFields: []
@@ -104,6 +141,10 @@ lowdb(dbAdapter).then((db) => {
     app.get("/start", (req, res) => startGet(req, res, db));
     app.get("/complete", (req, res) => completeGet(req, res, db));
     app.post("/saveNotes", (req, res) => saveNotesPost(req, res, db));
+    app.get("/admin/tasks", (req, res) => adminTasksGet(req, res, db));
+    app.get("/admin/tasks/delete", (req, res) => adminTasksDelete(req, res, db));
+    app.get("/admin/tasks/edit", (req, res) => adminTasksEditGet(req, res, db));
+    app.post("/admin/tasks/edit", (req, res) => adminTasksEditPost(req, res, db));
     app.listen(args.port, () => {
         console.log(`Server has started on port ${args.port}.`);
     });

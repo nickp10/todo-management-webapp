@@ -1,7 +1,8 @@
 <template>
     <div class="container">
         <div class="text-right">
-            <a href="./logout" class="btn btn-sm btn-outline-primary">Logout</a>
+            <a v-if="isAdmin" href="/admin/tasks" class="btn btn-outline-success">Admin</a>
+            <a href="/logout" class="btn btn-outline-primary">Logout</a>
         </div>
         <div class="card-deck text-center">
             <div class="card mb-4 box-shadow">
@@ -10,10 +11,10 @@
                 </div>
                 <div class="card-body">
                     <p class="text-left">{{task.description}}</p>
-                    <p class="text-left"><b>Deadline: </b>{{deadline}}</p>
+                    <p class="text-left"><b>Deadline: </b>{{task | formatDeadline}}</p>
                     <div class="text-left">
                         <b>Notes:</b>
-                        <form v-bind:action="'./saveNotes?id=' + task.id" method="POST">
+                        <form v-bind:action="'/saveNotes?id=' + task.id" method="POST">
                             <textarea name="notes" id="notes" v-model="task.notes" rows="5" cols="45"></textarea>
                             <div class="text-center">
                                 <input type="submit" class="btn btn-sm btn-secondary" value="Save Notes" />
@@ -22,8 +23,8 @@
                     </div>
                     <br />
                     <br />
-                    <a v-if="task.status === 'Not Started'" v-bind:href="'./start?id=' + task.id" class="btn btn-lg btn-primary">Start Task</a>
-                    <a v-if="task.status === 'Started'" v-bind:href="'./complete?id=' + task.id" class="btn btn-lg btn-primary">Complete Task</a>
+                    <a v-if="task.status === 'Not Started'" v-bind:href="'/start?id=' + task.id" class="btn btn-lg btn-primary">Start Task</a>
+                    <a v-if="task.status === 'Started'" v-bind:href="'/complete?id=' + task.id" class="btn btn-lg btn-primary">Complete Task</a>
                 </div>
             </div>
         </div>
@@ -31,9 +32,18 @@
 </template>
 
 <script>
+var moment = require("moment");
 export default {
     data: function () {
         return { }
+    },
+    filters: {
+        formatDeadline: function(task) {
+            if (!task || !task.deadline) {
+                return "No deadline set";
+            }
+            return moment(task.deadline).format("MM/DD/YYYY hh:mm:ss A");
+        }
     }
 }
 </script>

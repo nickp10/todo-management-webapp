@@ -1,6 +1,6 @@
 <template>
     <div class="text-center">
-        <form action="./" method="POST" class="form-signin">
+        <form action="/" method="POST" class="form-signin">
             <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
             <label for="username" class="sr-only">Email address</label>
             <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
