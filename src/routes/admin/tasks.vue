@@ -7,39 +7,67 @@
             <a href="/" class="btn btn-outline-primary">Home</a>
             <a href="/logout" class="btn btn-outline-primary">Logout</a>
         </div>
-        <br />
-        <div class="text-center">
-            <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
-            <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
-        </div>
         <div class="card-deck text-center">
-            <div v-for="task in tasks" v-bind:key="task.id" class="card mb-4 box-shadow">
+            <div class="card mb-4 box-shadow">
                 <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">{{task.title}}</h4>
+                    <h4 class="my-0 font-weight-normal">Tasks</h4>
                 </div>
                 <div class="card-body">
-                    <p class="text-left">{{task.description}}</p>
-                    <div class="text-left"><b>Assigned To: </b>{{task | formatUser(users)}}</div>
-                    <div class="text-left"><b>Deadline: </b>{{task.deadline | formatDate('No deadline set')}}</div>
-                    <div class="text-left"><b>Started: </b>{{task.dateStarted | formatDate('Not yet started')}}</div>
-                    <div class="text-left"><b>Completed: </b>{{task.dateCompleted | formatDate('Not yet completed')}}</div>
-                    <div class="text-left"><b>Status: </b>{{task.status}}</div>
-                    <div class="text-left"><b>Notes: </b>{{task.notes}}</div>
-                    <div v-for="customField in customFields" class="text-left" v-bind:key="customField.id">
-                        <b>{{customField.name}}: </b>
-                        {{task | formatCustomField(customField)}}
+                    <div class="text-center">
+                        <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
+                        <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
                     </div>
-                    <div class="bottom">
-                        <a v-if="task.status === 'Completed'" v-bind:href="'/admin/tasks/reopen?id=' + task.id" class="btn btn-sm btn-warning">Reopen Task</a>
-                        <a v-bind:href="'/admin/tasks/edit?id=' + task.id" class="btn btn-sm btn-primary">Edit Task</a>
-                        <a v-bind:href="'/admin/tasks/delete?id=' + task.id" class="btn btn-sm btn-danger">Delete Task</a>
+                    <br />
+                    <table class="table table-sm table-hover table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th style="width: 1%">Assigned&nbsp;To</th>
+                                <th style="width: 1%">Status</th>
+                                <th style="width: 1%">Deadline</th>
+                                <th style="width: 1%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-for="task in tasks">
+                            <tr v-bind:data-target="'#task' + task.id" class="clickable" v-bind:key="task.id + 'main'">
+                                <td class="text-left">
+                                    <i class="fa fa-plus" v-bind:id="'task' + task.id + 'plus'"></i>
+                                    <i class="fa fa-minus" style="display: none;" v-bind:id="'task' + task.id + 'minus'"></i>
+                                    &nbsp;{{task.title}}
+                                </td>
+                                <td class="text-left" v-html="formatSpaces(formatUser(task, users))"></td>
+                                <td class="text-left" v-html="formatSpaces(task.status)"></td>
+                                <td class="text-left" v-html="formatSpaces(formatDate(task.deadline, 'No Deadline'))"></td>
+                                <td style="white-space: nowrap">
+                                    <a v-if="task.status === 'Completed'" v-bind:href="'/admin/tasks/reopen?id=' + task.id" class="btn btn-sm btn-warning">Reopen Task</a>
+                                    <a v-bind:href="'/admin/tasks/edit?id=' + task.id" class="btn btn-sm btn-primary">Edit Task</a>
+                                    <a v-bind:href="'/admin/tasks/delete?id=' + task.id" class="btn btn-sm btn-danger">Delete Task</a>
+                                </td>
+                            </tr>
+                            <tr v-bind:id="'task' + task.id" v-bind:key="task.id" style="display: none;">
+                                <td>
+                                    <pre class="description text-left">{{task.description}}</pre>
+                                </td>
+                                <td colspan="4">
+                                    <div class="text-left"><b>Started: </b><span v-html="formatSpaces(formatDate(task.dateStarted, 'Not Started'))"></span></div>
+                                    <div class="text-left"><b>Completed: </b><span v-html="formatSpaces(formatDate(task.dateCompleted, 'Not Completed'))"></span></div>
+                                    <div v-for="customField in customFields" class="text-left" v-bind:key="customField.id">
+                                        <b>{{customField.name}}: </b>
+                                        {{task | formatCustomField(customField)}}
+                                    </div>
+                                    <div class="text-left"><b>Notes: </b><pre class="description">{{task.notes}}</pre></div>
+                                </td>
+                            </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <div v-if="tasks && tasks.length" class="text-center">
+                        <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
+                        <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
                     </div>
                 </div>
             </div>
-        </div>
-        <div v-if="tasks && tasks.length" class="text-center">
-            <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
-            <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
         </div>
     </div>
 </template>
@@ -51,6 +79,14 @@ export default {
         return { }
     },
     filters: {
+        formatCustomField: function(task, customField) {
+            if (!task || !customField) {
+                return "";
+            }
+            return task[customField.id];
+        }
+    },
+    methods: {
         formatDate: function(date, failString) {
             if (!date) {
                 return failString;
@@ -70,12 +106,22 @@ export default {
             }
             return user.username;
         },
-        formatCustomField: function(task, customField) {
-            if (!task || !customField) {
-                return "";
-            }
-            return task[customField.id];
+        formatSpaces: function(value) {
+            return value.replace(/\s/g, "&nbsp;");
         }
+    },
+    mounted: function() {
+        this.$nextTick(function() {
+            $(".clickable").click(function() {
+                var id = $(this).data("target");
+                $(id).toggle("fast");
+                $(id + "plus").toggle();
+                $(id + "minus").toggle();
+            });
+            $(".clickable a").click(function(e) {
+                e.stopPropagation();
+            });
+        });
     }
 }
 </script>
@@ -89,17 +135,12 @@ export default {
 .card-deck {
     margin-top: 10px;
 }
-.card {
-    max-width: 350px;
-    min-width: 350px;
-    padding-bottom: 50px;
-    position: relative;
-    width: 350px;
+.clickable {
+    cursor: pointer;
 }
-.bottom {
-    bottom: 15px;
-    margin-left: -1.25rem;
-    position: absolute;
-    width: 100%;
+pre.description {
+    font-family: inherit;
+    white-space: pre-wrap; 
+    word-wrap: break-word;
 }
 </style>

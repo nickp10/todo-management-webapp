@@ -44,7 +44,7 @@ export default {
     filters: {
         formatDeadline: function(task) {
             if (!task || !task.deadline) {
-                return "No deadline set";
+                return "No Deadline";
             }
             return moment(task.deadline).format("MM/DD/YYYY hh:mm:ss A");
         },
