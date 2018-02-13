@@ -18,6 +18,17 @@
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
                     </div>
                     <br />
+                    <ul class="nav nav-tabs" id="statusTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="notStartedTab" data-toggle="tab" href="#notStarted" role="tab" aria-controls="notStarted" aria-selected="true">Not Started</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="inProgressTab" data-toggle="tab" href="#inProgress" role="tab" aria-controls="inProgress" aria-selected="false">In Progress</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="completedTab" data-toggle="tab" href="#completed" role="tab" aria-controls="completed" aria-selected="false">Completed</a>
+                        </li>
+                    </ul>
                     <table class="table table-sm table-hover table-bordered table-striped">
                         <thead>
                             <tr>
@@ -29,7 +40,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="task in tasks">
+                            <template v-for="task in tasks[currentTasks]">
                             <tr v-bind:data-target="'#task' + task.id" class="clickable" v-bind:key="task.id + 'main'">
                                 <td class="text-left">
                                     <i class="fa fa-plus" v-bind:id="'task' + task.id + 'plus'"></i>
@@ -60,9 +71,12 @@
                                 </td>
                             </tr>
                             </template>
+                            <tr v-if="!tasks[currentTasks] || !tasks[currentTasks].length">
+                                <td colspan="5" class="text-center">There are currently no tasks in this status</td>
+                            </tr>
                         </tbody>
                     </table>
-                    <div v-if="tasks && tasks.length" class="text-center">
+                    <div class="text-center">
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
                     </div>
@@ -111,15 +125,20 @@ export default {
         }
     },
     mounted: function() {
+        var that = this;
         this.$nextTick(function() {
-            $(".clickable").click(function() {
+            $(document).on("click", ".clickable", function() {
                 var id = $(this).data("target");
                 $(id).toggle("fast");
                 $(id + "plus").toggle();
                 $(id + "minus").toggle();
             });
-            $(".clickable a").click(function(e) {
+            $(document).on("click", ".clickable a", function(e) {
                 e.stopPropagation();
+            });
+            $("#statusTabs").on("shown.bs.tab", function (e) {
+                var target = $(e.target).attr("href");
+                that.$data.currentTasks = target;
             });
         });
     }
@@ -137,6 +156,9 @@ export default {
 }
 .clickable {
     cursor: pointer;
+}
+.table, .table th {
+    border-top: 0;
 }
 pre.description {
     font-family: inherit;

@@ -14,13 +14,18 @@ export function adminTasksGet(req: express.Request, res: express.Response, db: l
         homeGet(req, res, db);
         return;
     }
-    const tasks = db.get("tasks").sortBy("status").value().reverse();
+    const tasks = db.get("tasks").sortBy("dateCreated").value().reverse();
     const users = db.get("users").value();
     const customFields = db.get("customFields").value();
     const data = {
-        tasks: tasks,
         users: users,
         customFields: customFields,
+        currentTasks: "#notStarted",
+        tasks: {
+            "#notStarted": tasks.filter(t => t.status === "Not Started"),
+            "#inProgress": tasks.filter(t => t.status === "In Progress"),
+            "#completed": tasks.filter(t => t.status === "Completed")
+        },
         nav: {
             isTasks: true
         }

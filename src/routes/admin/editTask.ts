@@ -65,6 +65,7 @@ export function adminTasksEditPost(req: express.Request, res: express.Response, 
     }
     const updatedTask: Task = {
         id: existingTask ? existingTask.id : uuid4(),
+        dateCreated: existingTask ? existingTask.dateCreated : new Date(),
         title: req.body.title,
         description: req.body.description,
         assignee: assigneeValue,

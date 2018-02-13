@@ -17,6 +17,7 @@ export interface Task {
     id: string;
     title: string;
     description: string;
+    dateCreated: Date;
     dateStarted?: Date;
     dateCompleted?: Date;
     deadline?: Date;

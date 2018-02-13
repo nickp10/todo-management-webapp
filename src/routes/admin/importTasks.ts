@@ -53,6 +53,7 @@ export function adminTasksImportPost(req: express.Request, res: express.Response
                     const assignee = db.get("users").find({ username: row[2] }).value();
                     const task: Task = {
                         id: uuid4(),
+                        dateCreated: new Date(),
                         title: row[0],
                         description: row[1],
                         assignee: assignee ? assignee.id : undefined,

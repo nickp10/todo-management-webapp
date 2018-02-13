@@ -9,7 +9,7 @@ export function homeGet(req: express.Request, res: express.Response, db: lowdb.L
         loginGet(req, res, db);
         return;
     }
-    let task = db.get("tasks").find({ assignee: req.session.user.id, status: "Started" }).value();
+    let task = db.get("tasks").find({ assignee: req.session.user.id, status: "In Progress" }).value();
     if (!task) {
         task = db.get("tasks").find({ assignee: req.session.user.id, status: "Not Started" }).value();
     }
