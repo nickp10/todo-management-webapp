@@ -5,7 +5,20 @@ import * as moment from "moment";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-export function adminTasksGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+function getStatusTag(status: string) {
+    if (status === "Not Started") {
+        return "#notStarted";
+    } else if (status === "In Progress") {
+        return "#inProgress";
+    } else if (status === "In Review") {
+        return "#inReview";
+    } else if (status === "Completed") {
+        return "#completed";
+    }
+    return "#notStarted";
+}
+
+function adminTasksGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, currentTasks: string) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -20,11 +33,12 @@ export function adminTasksGet(req: express.Request, res: express.Response, db: l
     const data = {
         users: users,
         customFields: customFields,
-        currentTasks: "#notStarted",
+        currentTasks: currentTasks,
         searchText: "",
         tasks: {
             "#notStarted": tasks.filter(t => t.status === "Not Started"),
             "#inProgress": tasks.filter(t => t.status === "In Progress"),
+            "#inReview": tasks.filter(t => t.status === "In Review"),
             "#completed": tasks.filter(t => t.status === "Completed")
         },
         nav: {
@@ -37,6 +51,10 @@ export function adminTasksGet(req: express.Request, res: express.Response, db: l
         }
     };
     (<any>res).renderVue("admin/tasks", data, vueOptions);
+}
+
+export function adminTasksGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    adminTasksGetHelper(req, res, db, "#notStarted");
 };
 
 export function adminTasksDelete(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
@@ -52,6 +70,25 @@ export function adminTasksDelete(req: express.Request, res: express.Response, db
     adminTasksGet(req, res, db);
 };
 
+export function adminTasksComplete(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    if (!req.session.user) {
+        loginGet(req, res, db);
+        return;
+    }
+    if (!req.session.user.isAdmin) {
+        homeGet(req, res, db);
+        return;
+    }
+    const task = db.get("tasks").find({ id: req.query.id }).value();
+    if (task) {
+        const currentTasks = getStatusTag(task.status);
+        db.get("tasks").find({ id: req.query.id }).assign({ dateCompleted: new Date(), status: "Completed", completedBy: req.session.user.id }).write();
+        adminTasksGetHelper(req, res, db, currentTasks);
+    } else {
+        adminTasksGet(req, res, db);
+    }
+};
+
 export function adminTasksReopen(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
     if (!req.session.user) {
         loginGet(req, res, db);
@@ -61,6 +98,12 @@ export function adminTasksReopen(req: express.Request, res: express.Response, db
         homeGet(req, res, db);
         return;
     }
-    db.get("tasks").find({ id: req.query.id }).assign({ dateStarted: "", dateCompleted: "", status: "Not Started" }).write();
-    adminTasksGet(req, res, db);
+    const task = db.get("tasks").find({ id: req.query.id }).value();
+    if (task) {
+        const currentTasks = getStatusTag(task.status);
+        db.get("tasks").find({ id: req.query.id }).assign({ dateStarted: "", dateCompleted: "", dateSentForReview: "", completedBy: "", status: "Not Started" }).write();
+        adminTasksGetHelper(req, res, db, currentTasks);
+    } else {
+        adminTasksGet(req, res, db);
+    }
 };

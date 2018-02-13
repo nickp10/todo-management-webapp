@@ -19,10 +19,12 @@ export interface Task {
     description: string;
     dateCreated: Date;
     dateStarted?: Date;
+    dateSentForReview?: Date;
     dateCompleted?: Date;
     deadline?: Date;
     notes?: string;
     assignee?: string;
+    completedBy?: string;
     status: string;
 }
 

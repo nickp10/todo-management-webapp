@@ -15,7 +15,7 @@ import * as process from "process";
 import * as uuid4 from "uuid/v4";
 import { adminCustomFieldsGet, adminCustomFieldsPost, adminCustomFieldsDelete } from "./routes/admin/customFields";
 import { adminTasksEditGet, adminTasksEditPost } from "./routes/admin/editTask";
-import { adminTasksGet, adminTasksDelete, adminTasksReopen } from "./routes/admin/tasks";
+import { adminTasksGet, adminTasksDelete, adminTasksComplete, adminTasksReopen } from "./routes/admin/tasks";
 import { adminTasksImportGet, adminTasksImportPost } from "./routes/admin/importTasks";
 import { adminUsersEditGet, adminUsersEditPost } from "./routes/admin/editUser";
 import { adminUsersGet, adminUsersDelete } from "./routes/admin/users";
@@ -24,6 +24,7 @@ import { homeGet } from "./routes/home";
 import { loginGet, loginPost } from "./routes/login";
 import { logoutGet } from "./routes/logout";
 import { saveNotesPost } from "./routes/saveNotes";
+import { sendForReviewGet } from "./routes/sendForReview";
 import { startGet } from "./routes/start";
 const MemoryStore = require("memorystore")(expressSession);
 
@@ -108,6 +109,7 @@ lowdb(dbAdapter).then((db) => {
     app.get("/home", (req, res) => homeGet(req, res, db));
     app.get("/logout", (req, res) => logoutGet(req, res, db));
     app.get("/start", (req, res) => startGet(req, res, db));
+    app.get("/sendForReview", (req, res) => sendForReviewGet(req, res, db));
     app.get("/complete", (req, res) => completeGet(req, res, db));
     app.post("/saveNotes", (req, res) => saveNotesPost(req, res, db));
     app.get("/admin/tasks", (req, res) => adminTasksGet(req, res, db));
@@ -119,6 +121,7 @@ lowdb(dbAdapter).then((db) => {
     app.post("/admin/tasks/edit", (req, res) => adminTasksEditPost(req, res, db));
     app.get("/admin/tasks/import", (req, res) => adminTasksImportGet(req, res, db));
     app.post("/admin/tasks/import", (req, res) => adminTasksImportPost(req, res, db));
+    app.get("/admin/tasks/complete", (req, res) => adminTasksComplete(req, res, db));
     app.get("/admin/tasks/reopen", (req, res) => adminTasksReopen(req, res, db));
     app.get("/admin/users", (req, res) => adminUsersGet(req, res, db));
     app.get("/admin/users/delete", (req, res) => adminUsersDelete(req, res, db));

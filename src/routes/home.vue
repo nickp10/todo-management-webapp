@@ -28,6 +28,7 @@
                     <br />
                     <br />
                     <a v-if="task.status === 'Not Started'" v-bind:href="'/start?id=' + task.id" class="btn btn-lg btn-primary">Start Task</a>
+                    <a v-if="task.status === 'In Progress'" v-bind:href="'/sendForReview?id=' + task.id" class="btn btn-lg btn-danger">Send Task for Review</a>
                     <a v-if="task.status === 'In Progress'" v-bind:href="'/complete?id=' + task.id" class="btn btn-lg btn-primary">Complete Task</a>
                 </div>
             </div>

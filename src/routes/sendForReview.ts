@@ -4,11 +4,11 @@ import * as lowdb from "lowdb";
 import { homeGet } from "./home";
 import { loginGet } from "./login";
 
-export function completeGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function sendForReviewGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
     }
-    db.get("tasks").find({ id: req.query.id }).assign({ dateCompleted: new Date(), status: "Completed", completedBy: req.session.user.id }).write();
+    db.get("tasks").find({ id: req.query.id }).assign({ dateSentForReview: new Date(), status: "In Review" }).write();
     homeGet(req, res, db);
 };
