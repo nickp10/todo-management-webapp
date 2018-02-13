@@ -12,6 +12,12 @@
                 <div class="card-header">
                     <h4 class="my-0 font-weight-normal">Import Tasks</h4>
                 </div>
+                <div class="alert alert-primary">
+                    <i class="fa fa-info-circle"></i>&nbsp;
+                    The uploaded file should be a comma-separated CSV. The order of the columns should be:
+                    <br /><br />
+                    <strong>Title</strong>, <strong>Description</strong>, Assignee, Deadline{{customFieldsStr}}
+                </div>
                 <div class="card-body">
                     <form action="/admin/tasks/import" method="POST" class="form-importtasks" enctype="multipart/form-data">
                         <div class="form-group row input-group">
@@ -43,6 +49,10 @@ export default {
     max-width: 800px;
     padding-top: 40px;
     padding-bottom: 40px;
+}
+.alert-primary {
+    margin: 1.25rem 1.25rem 0 1.25rem;
+    text-align: left;
 }
 .card-deck {
     margin-top: 10px;

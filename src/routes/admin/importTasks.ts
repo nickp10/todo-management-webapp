@@ -17,7 +17,9 @@ export function adminTasksImportGet(req: express.Request, res: express.Response,
         homeGet(req, res, db);
         return;
     }
+    const customFields = db.get("customFields").value();
     const data = {
+        customFieldsStr: customFields.length ? ", " + customFields.map(field => field.name).join(", ") : "",
         nav: {
             isTasks: true
         }
@@ -44,24 +46,23 @@ export function adminTasksImportPost(req: express.Request, res: express.Response
         const data = file.data.toString("UTF8");
         if (data) {
             const customFields = db.get("customFields").value();
-            const lines = data.split(/\r?\n/);
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-                const columns = line.split(/,/);
-                if (columns.length >= 4) {
-                    const assignee = db.get("users").find({ username: columns[2] }).value();
+            const rows = parseCSVFile(data);
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                if (row.length >= 4) {
+                    const assignee = db.get("users").find({ username: row[2] }).value();
                     const task: Task = {
                         id: uuid4(),
-                        title: columns[0],
-                        description: columns[1],
+                        title: row[0],
+                        description: row[1],
                         assignee: assignee ? assignee.id : undefined,
-                        deadline: new Date(columns[3]),
+                        deadline: new Date(row[3]),
                         status: "Not Started"
                     };
-                    for (let j = 4; j < columns.length; j++) {
+                    for (let j = 4; j < row.length; j++) {
                         if (customFields.length > j - 4) {
                             const customField = customFields[j - 4];
-                            const value = columns[j];
+                            const value = row[j];
                             task[customField.id] = value;
                         }
                     }
@@ -72,3 +73,54 @@ export function adminTasksImportPost(req: express.Request, res: express.Response
     }
     adminTasksGet(req, res, db);
 };
+
+function parseCSVFile(data: string): string[][] {
+    const rows: string[][] = [];
+    data = data.replace(/\r\n/g, "\n");
+    let currentIndex = 0;
+    let currentRowIndex = 0;
+    while (currentIndex < data.length) {
+        const currentRow = rows[currentRowIndex] || [];
+        rows[currentRowIndex] = currentRow;
+        if (data[currentIndex] === '"') {
+            currentIndex++;
+            let value = "";
+            let nextQuote = data.indexOf('"', currentIndex);
+            while (nextQuote > -1) {
+                // Check if the quote is escaped with a following quote
+                if (data.length > nextQuote + 1 && data[nextQuote + 1] === '"') {
+                    value += data.substr(currentIndex, (nextQuote + 1) - currentIndex);
+                    currentIndex = nextQuote + 2;
+                    nextQuote = data.indexOf('"', currentIndex);
+                } else {
+                    value += data.substr(currentIndex, nextQuote - currentIndex)
+                    currentIndex = nextQuote + 1;
+                    nextQuote = -1;
+                }
+            }
+            currentRow.push(value);
+            if (currentIndex < data.length && data[currentIndex] === "\n") {
+                currentRowIndex++;
+            }
+            currentIndex++;
+        } else {
+            const nextComma = data.indexOf(',', currentIndex);
+            const nextLine = data.indexOf('\n', currentIndex);
+            if ((nextComma <= -1 || nextLine < nextComma) && nextLine > -1) {
+                const value = data.substr(currentIndex, nextLine - currentIndex);
+                currentRow.push(value);
+                currentIndex = nextLine + 1;
+                currentRowIndex++;
+            } else if (nextComma > -1) {
+                const value = data.substr(currentIndex, nextComma - currentIndex);
+                currentRow.push(value);
+                currentIndex = nextComma + 1;
+            } else {
+                const value = data.substr(currentIndex);
+                currentRow.push(value);
+                currentIndex = data.length;
+            }
+        }
+    }
+    return rows;
+}
