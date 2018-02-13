@@ -15,7 +15,12 @@ export function adminCustomFieldsGet(req: express.Request, res: express.Response
         return;
     }
     const customFields = db.get("customFields").value();
-    const data = { customFields: customFields };
+    const data = {
+        customFields: customFields,
+        nav: {
+            isCustomFields: true
+        }
+    };
     const vueOptions = {
         head: {
             title: "Todo Manager Admin - Custom Fields"

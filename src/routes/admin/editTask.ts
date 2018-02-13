@@ -20,7 +20,15 @@ function adminTasksEditGetHelper(req: express.Request, res: express.Response, db
     task.assignee = task.assignee || "";
     const users = db.get("users").value();
     const customFields = db.get("customFields").value();
-    const data = { task: task, users: users, customFields: customFields, error: error || "" };
+    const data = {
+        task: task,
+        users: users,
+        customFields: customFields,
+        error: error || "",
+        nav: {
+            isTasks: true
+        }
+    };
     const vueOptions = {
         head: {
             title: "Todo Manager Admin - Tasks"
@@ -61,7 +69,8 @@ export function adminTasksEditPost(req: express.Request, res: express.Response, 
         description: req.body.description,
         assignee: assigneeValue,
         deadline: moment(req.body.deadline).toDate(),
-        status: existingTask ? existingTask.status : "Not Started"
+        status: existingTask ? existingTask.status : "Not Started",
+        notes: req.body.notes
     };
     const customFields = db.get("customFields").value();
     for (let i = 0; i < customFields.length; i++) {

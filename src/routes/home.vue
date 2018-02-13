@@ -10,7 +10,7 @@
                     <h4 class="my-0 font-weight-normal">{{task.title}}</h4>
                 </div>
                 <div class="card-body">
-                    <p class="text-left">{{task.description}}</p>
+                    <pre class="text-left description">{{task.description}}</pre>
                     <div class="text-left"><b>Deadline: </b>{{task | formatDeadline}}</div>
                     <div v-for="customField in customFields" class="text-left" v-bind:key="customField.id">
                         <b>{{customField.name}}: </b>
@@ -19,7 +19,7 @@
                     <div class="text-left">
                         <b>Notes:</b>
                         <form v-bind:action="'/saveNotes?id=' + task.id" method="POST">
-                            <textarea name="notes" id="notes" v-model="task.notes" rows="5" cols="45"></textarea>
+                            <textarea v-model="task.notes" name="notes" id="notes" rows="5" class="form-control" placeholder="Notes"></textarea>
                             <div class="text-center">
                                 <input type="submit" class="btn btn-sm btn-secondary" value="Save Notes" />
                             </div>
@@ -60,11 +60,16 @@ export default {
 
 <style scoped>
 .container {
-    max-width: 400px;
+    max-width: 500px;
     padding-top: 40px;
     padding-bottom: 40px;
 }
 .card-deck {
     margin-top: 10px;
+}
+pre.description {
+    font-family: inherit;
+    white-space: pre-wrap; 
+    word-wrap: break-word;
 }
 </style>

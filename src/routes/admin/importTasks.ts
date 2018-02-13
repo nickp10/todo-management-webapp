@@ -17,7 +17,11 @@ export function adminTasksImportGet(req: express.Request, res: express.Response,
         homeGet(req, res, db);
         return;
     }
-    const data = { };
+    const data = {
+        nav: {
+            isTasks: true
+        }
+    };
     const vueOptions = {
         head: {
             title: "Todo Manager Admin - Tasks"

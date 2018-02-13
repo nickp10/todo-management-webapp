@@ -23,7 +23,12 @@ export function adminUsersEditGet(req: express.Request, res: express.Response, d
         return;
     }
     user.maxTasks = user.maxTasks || 100;
-    const data = { user: user };
+    const data = {
+        user: user,
+        nav: {
+            isUsers: true
+        }
+    };
     const vueOptions = {
         head: {
             title: "Todo Manager Admin - Users"

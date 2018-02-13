@@ -1,9 +1,9 @@
 <template>
     <div class="container">
         <div class="text-center">
-            <a href="/admin/tasks" class="btn btn-outline-success">Tasks</a>
-            <a href="/admin/customFields" class="btn btn-outline-success">Custom Fields</a>
-            <a href="/admin/users" class="btn btn-outline-success">Users</a>
+            <a href="/admin/tasks" class="btn" v-bind:class="[ nav.isTasks ? 'btn-success' : 'btn-outline-success' ]">Tasks</a>
+            <a href="/admin/customFields" class="btn" v-bind:class="[ nav.isCustomFields ? 'btn-success' : 'btn-outline-success' ]">Custom Fields</a>
+            <a href="/admin/users" class="btn" v-bind:class="[ nav.isUsers ? 'btn-success' : 'btn-outline-success' ]">Users</a>
             <a href="/" class="btn btn-outline-primary">Home</a>
             <a href="/logout" class="btn btn-outline-primary">Logout</a>
         </div>
@@ -23,7 +23,7 @@
                         <div class="form-group row">
                             <label for="description" class="col-sm-2 col-form-label">Description:</label>
                             <div class="col-sm-10">
-                                <input v-model="task.description" type="text" id="description" name="description" class="form-control" placeholder="Description" required />
+                                <textarea v-model="task.description" name="description" id="description" rows="10" class="form-control" placeholder="Description" required></textarea>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -39,10 +39,16 @@
                             <input type="hidden" name="deadline" id="deadlineValue" />
                             <label for="deadline" class="col-sm-2 col-form-label">Deadline:</label>
                             <div class="col-sm-10 input-group date" id="deadline" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input" data-target="#deadline" />
+                                <input type="text" class="form-control datetimepicker-input" data-target="#deadline" placeholder="Deadline" />
                                 <div class="input-group-append" data-target="#deadline" data-toggle="datetimepicker">
                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="notes" class="col-sm-2 col-form-label">Notes:</label>
+                            <div class="col-sm-10">
+                                <textarea v-model="task.notes" name="notes" id="notes" rows="5" class="form-control" placeholder="Notes"></textarea>
                             </div>
                         </div>
                         <div v-for="customField in customFields" class="form-group row" v-bind:key="customField.id">

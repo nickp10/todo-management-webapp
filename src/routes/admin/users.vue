@@ -1,9 +1,9 @@
 <template>
     <div class="container">
         <div class="text-center">
-            <a href="/admin/tasks" class="btn btn-outline-success">Tasks</a>
-            <a href="/admin/customFields" class="btn btn-outline-success">Custom Fields</a>
-            <a href="/admin/users" class="btn btn-outline-success">Users</a>
+            <a href="/admin/tasks" class="btn" v-bind:class="[ nav.isTasks ? 'btn-success' : 'btn-outline-success' ]">Tasks</a>
+            <a href="/admin/customFields" class="btn" v-bind:class="[ nav.isCustomFields ? 'btn-success' : 'btn-outline-success' ]">Custom Fields</a>
+            <a href="/admin/users" class="btn" v-bind:class="[ nav.isUsers ? 'btn-success' : 'btn-outline-success' ]">Users</a>
             <a href="/" class="btn btn-outline-primary">Home</a>
             <a href="/logout" class="btn btn-outline-primary">Logout</a>
         </div>

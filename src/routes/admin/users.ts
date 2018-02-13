@@ -14,7 +14,12 @@ export function adminUsersGet(req: express.Request, res: express.Response, db: l
         return;
     }
     const users = db.get("users").value();
-    const data = { users: users };
+    const data = {
+        users: users,
+        nav: {
+            isUsers: true
+        }
+    };
     const vueOptions = {
         head: {
             title: "Todo Manager Admin - Users"
