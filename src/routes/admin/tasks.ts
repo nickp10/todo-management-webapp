@@ -21,6 +21,7 @@ export function adminTasksGet(req: express.Request, res: express.Response, db: l
         users: users,
         customFields: customFields,
         currentTasks: "#notStarted",
+        searchText: "",
         tasks: {
             "#notStarted": tasks.filter(t => t.status === "Not Started"),
             "#inProgress": tasks.filter(t => t.status === "In Progress"),

@@ -17,7 +17,12 @@
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
                     </div>
-                    <br />
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Search:</span>
+                        </div>
+                        <input v-model="searchText" type="text" name="search" id="search" class="form-control" placeholder="Search" autofocus />
+                    </div>
                     <ul class="nav nav-tabs" id="statusTabs" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="notStartedTab" data-toggle="tab" href="#notStarted" role="tab" aria-controls="notStarted" aria-selected="true">Not Started</a>
@@ -40,7 +45,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="task in tasks[currentTasks]">
+                            <template v-for="task in filterTasks(tasks[currentTasks], searchText)">
                             <tr v-bind:data-target="'#task' + task.id" class="clickable" v-bind:key="task.id + 'main'">
                                 <td class="text-left">
                                     <i class="fa fa-plus" v-bind:id="'task' + task.id + 'plus'"></i>
@@ -122,6 +127,13 @@ export default {
         },
         formatSpaces: function(value) {
             return value.replace(/\s/g, "&nbsp;");
+        },
+        filterTasks: function(tasks, searchText) {
+            if (!searchText) {
+                return tasks;
+            }
+            searchText = searchText.toLowerCase();
+            return tasks.filter(function(t) { return t.title.toLowerCase().indexOf(searchText) > -1; });
         }
     },
     mounted: function() {
