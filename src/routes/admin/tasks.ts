@@ -5,7 +5,7 @@ import * as moment from "moment";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-function getStatusTag(status: string) {
+export function getStatusTag(status: string): string {
     if (status === "Not Started") {
         return "#notStarted";
     } else if (status === "In Progress") {
@@ -18,7 +18,7 @@ function getStatusTag(status: string) {
     return "#notStarted";
 }
 
-function adminTasksGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, currentTasks: string) {
+export function adminTasksGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, currentTasks: string) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
