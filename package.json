@@ -1,6 +1,6 @@
 {
   "name": "todo-management-webapp",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A webapp built on express.js and vue.js for managing to-dos",
   "bin": "build/index.js",
   "main": "build/index.js",
@@ -35,7 +35,8 @@
     "copy-assets-vue": "copyfiles -f node_modules/vue/dist/vue.min.js src/assets/js",
     "copy-vue": "copyfiles -u 1 src/**/*.vue build && copyfiles -u 1 src/assets/** build",
     "copy-vue-debug": "copyfiles -u 1 src/**/*.vue debug && copyfiles -u 1 src/assets/** debug",
-    "prepare": "npm run copy-assets && npm run build"
+    "prepare": "npm run copy-assets && npm run build",
+    "start": "node build/index.js"
   },
   "dependencies": {
     "argv": "0.0.2",

@@ -66,8 +66,14 @@ export function adminTasksDelete(req: express.Request, res: express.Response, db
         homeGet(req, res, db);
         return;
     }
-    db.get("tasks").remove({ id: req.query.id }).write();
-    adminTasksGet(req, res, db);
+    const task = db.get("tasks").find({ id: req.query.id }).value();
+    if (task) {
+        const currentTasks = getStatusTag(task.status);
+        db.get("tasks").remove({ id: req.query.id }).write();
+        adminTasksGetHelper(req, res, db, currentTasks);
+    } else {
+        adminTasksGet(req, res, db);
+    }
 };
 
 export function adminTasksComplete(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
