@@ -2,6 +2,7 @@
     <div class="container">
         <div class="text-right">
             <a v-if="isAdmin" href="/admin/tasks" class="btn btn-outline-success">Admin</a>
+            <a href="/changePassword" class="btn btn-outline-primary">Change Password</a>
             <a href="/logout" class="btn btn-outline-primary">Logout</a>
         </div>
         <div class="card-deck text-center">
@@ -27,7 +28,7 @@ export default {
 
 <style scoped>
 .container {
-    max-width: 400px;
+    max-width: 500px;
     padding-top: 40px;
     padding-bottom: 40px;
 }

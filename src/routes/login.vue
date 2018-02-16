@@ -8,6 +8,7 @@
             <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
             <div v-if="error" class="alert alert-danger">{{error}}</div>
             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            <a href="/register" class="btn btn-lg btn-secondary btn-block">Register</a>
         </form>
     </div>
 </template>
@@ -36,7 +37,7 @@ div {
 }
 .form-signin {
     width: 100%;
-    max-width: 330px;
+    max-width: 350px;
     padding: 15px;
     margin: 0 auto;
 }

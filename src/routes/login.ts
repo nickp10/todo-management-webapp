@@ -41,7 +41,3 @@ export function loginPost(req: express.Request, res: express.Response, db: lowdb
         homeGet(req, res, db);
     }
 }
-
-export default (router: express.Express, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) => {
-    
-};

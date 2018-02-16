@@ -8,7 +8,7 @@ import { adminUsersGet } from "./users";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-export function adminUsersEditGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+function adminUsersEditGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, userId: string, error?: string) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -17,13 +17,10 @@ export function adminUsersEditGet(req: express.Request, res: express.Response, d
         homeGet(req, res, db);
         return;
     }
-    const user: any = db.get("users").find({ id: req.query.id }).value() || { };
-    if (user && user.isRoot) {
-        adminUsersGet(req, res, db);
-        return;
-    }
+    const user: any = db.get("users").find({ id: userId }).value() || { };
     user.maxTasks = user.maxTasks || 100;
     const data = {
+        error: error || "",
         user: user,
         nav: {
             isUsers: true
@@ -37,6 +34,10 @@ export function adminUsersEditGet(req: express.Request, res: express.Response, d
     (<any>res).renderVue("admin/editUser", data, vueOptions);
 };
 
+export function adminUsersEditGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    adminUsersEditGetHelper(req, res, db, req.query.id);
+}
+
 export function adminUsersEditPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
     if (!req.session.user) {
         loginGet(req, res, db);
@@ -47,10 +48,6 @@ export function adminUsersEditPost(req: express.Request, res: express.Response, 
         return;
     }
     const existingUser = db.get("users").find({ id: req.query.id }).value();
-    if (existingUser && existingUser.isRoot) {
-        adminUsersGet(req, res, db);
-        return;
-    }
     let password = "";
     if (existingUser) {
         password = existingUser.password;
@@ -59,16 +56,23 @@ export function adminUsersEditPost(req: express.Request, res: express.Response, 
         password = crypto.SHA256(req.body.password).toString();
     }
     if (!password) {
-        adminUsersGet(req, res, db);
+        adminUsersEditGetHelper(req, res, db, existingUser ? existingUser.id : "", "Password is required.");
         return;
+    }
+    if (!existingUser || existingUser.username !== req.body.username) {
+        const userMatchByUsername = db.get("users").find({ username: req.body.username }).value();
+        if (userMatchByUsername) {
+            adminUsersEditGetHelper(req, res, db, existingUser ? existingUser.id : "", "A user already exists with the specified username.");
+            return;
+        }
     }
     const updatedUser: User = {
         id: existingUser ? existingUser.id : uuid4(),
         username: req.body.username,
         password: password,
         maxTasks: utils.coerceInt(req.body.maxTasks) || 100,
-        isAdmin: !!req.body.isAdmin,
-        isRoot: false
+        isAdmin: !!req.body.isAdmin || (existingUser && existingUser.isRoot),
+        isRoot: existingUser ? existingUser.isRoot : false
     };
     if (existingUser) {
         db.get("users").find({ id: req.query.id }).assign(updatedUser).write();

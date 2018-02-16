@@ -19,10 +19,12 @@ import { adminTasksGet, adminTasksDelete, adminTasksComplete, adminTasksReopen }
 import { adminTasksImportGet, adminTasksImportPost } from "./routes/admin/importTasks";
 import { adminUsersEditGet, adminUsersEditPost } from "./routes/admin/editUser";
 import { adminUsersGet, adminUsersDelete } from "./routes/admin/users";
+import { changePasswordGet, changePasswordPost } from "./routes/changePassword";
 import { completeGet } from "./routes/complete";
 import { homeGet } from "./routes/home";
 import { loginGet, loginPost } from "./routes/login";
 import { logoutGet } from "./routes/logout";
+import { registerGet, registerPost } from "./routes/register";
 import { saveNotesPost } from "./routes/saveNotes";
 import { sendForReviewGet } from "./routes/sendForReview";
 import { startGet } from "./routes/start";
@@ -108,6 +110,10 @@ lowdb(dbAdapter).then((db) => {
     app.post("/", (req, res) => loginPost(req, res, db));
     app.get("/home", (req, res) => homeGet(req, res, db));
     app.get("/logout", (req, res) => logoutGet(req, res, db));
+    app.get("/changePassword", (req, res) => changePasswordGet(req, res, db));
+    app.post("/changePassword", (req, res) => changePasswordPost(req, res, db));
+    app.get("/register", (req, res) => registerGet(req, res, db));
+    app.post("/register", (req, res) => registerPost(req, res, db));
     app.get("/start", (req, res) => startGet(req, res, db));
     app.get("/sendForReview", (req, res) => sendForReviewGet(req, res, db));
     app.get("/complete", (req, res) => completeGet(req, res, db));

@@ -28,7 +28,7 @@
                                 <td>{{user.maxTasks}}</td>
                                 <td>{{user.isAdmin | formatIsAdmin}}</td>
                                 <td>
-                                    <a v-if="!user.isRoot" v-bind:href="'/admin/users/edit?id=' + user.id" class="btn btn-sm btn-primary">Edit User</a>
+                                    <a v-bind:href="'/admin/users/edit?id=' + user.id" class="btn btn-sm btn-primary">Edit User</a>
                                     <a v-if="!user.isRoot" v-bind:href="'/admin/users/delete?id=' + user.id" class="btn btn-sm btn-danger">Delete User</a>
                                 </td>
                             </tr>

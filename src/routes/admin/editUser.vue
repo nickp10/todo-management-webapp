@@ -38,10 +38,11 @@
                         <div class="form-group row">
                             <div class="col-sm-2 text-left">Admin</div>
                             <div class="col-sm-10 form-check text-left">
-                                <input v-model="user.isAdmin" class="form-check-input" type="checkbox" id="isAdmin" name="isAdmin" />
+                                <input v-if="!user.isRoot" v-model="user.isAdmin" class="form-check-input" type="checkbox" id="isAdmin" name="isAdmin" />
                                 <label class="form-check-label" for="isAdmin">Is Admin</label>
                             </div>
                         </div>
+                        <div v-if="error" class="alert alert-danger">{{error}}</div>
                         <div class="text-center">
                             <input type="submit" class="btn btn-primary" value="Save" />
                         </div>
