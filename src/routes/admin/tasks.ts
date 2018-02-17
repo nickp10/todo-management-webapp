@@ -75,6 +75,35 @@ export function adminTasksDelete(req: express.Request, res: express.Response, db
     }
 };
 
+export function adminTasksDeleteMany(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    if (!req.session.user) {
+        loginGet(req, res, db);
+        return;
+    }
+    if (!req.session.user.isAdmin) {
+        homeGet(req, res, db);
+        return;
+    }
+    let currentTasks = "";
+    const ids = req.query.ids.split(",");
+    for (let i = 0; i < ids.length; i++) {
+        const id = ids[i];
+        if (!currentTasks) {
+            const task = db.get("tasks").find({ id: id }).value();
+            if (task) {
+                currentTasks = getStatusTag(task.status);
+            }
+        }
+        db.get("tasks").remove({ id: id }).value();
+    }
+    db.write();
+    if (currentTasks) {
+        adminTasksGetHelper(req, res, db, currentTasks);
+    } else {
+        adminTasksGet(req, res, db);
+    }
+};
+
 export function adminTasksComplete(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
     if (!req.session.user) {
         loginGet(req, res, db);

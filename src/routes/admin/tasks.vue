@@ -16,6 +16,8 @@
                     <div class="text-center">
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
+                        <a class="btn btn-primary reassign-selected">Reassign Selected Tasks</a>
+                        <a class="btn btn-danger delete-selected">Delete Selected Tasks</a>
                     </div>
                     <ul class="nav nav-tabs" id="statusTabs" role="tablist">
                         <li class="nav-item">
@@ -43,8 +45,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="task in tasks[currentTasks]" v-bind:data-target="'#task' + task.id" class="clickable" v-bind:key="task.id + 'main'">
-                                <td>
+                            <tr v-for="task in tasks[currentTasks]" v-bind:data-target="'#task' + task.id" v-bind:data-taskid="task.id" class="clickable" v-bind:key="task.id + 'main'">
+                                <td class="expandable">
                                     <i class="fa fa-plus" v-bind:id="'task' + task.id + 'plus'"></i>
                                     <i class="fa fa-minus" v-bind:id="'task' + task.id + 'minus'"></i>
                                 </td>
@@ -92,6 +94,8 @@
                     <div class="text-center">
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
+                        <a class="btn btn-primary reassign-selected">Reassign Selected Tasks</a>
+                        <a class="btn btn-danger delete-selected">Delete Selected Tasks</a>
                     </div>
                 </div>
             </div>
@@ -145,19 +149,6 @@ export default {
                 lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "All"]],
                 ordering: false
             });
-            $(document).on("click", ".table td", function () {
-                var tr = $(this).closest("tr");
-                var row = table.row(tr);
-                var id = tr.data("target");
-                var div = $(id);
-                if (row.child.isShown()) {
-                    row.child.hide();
-                    tr.removeClass("shown");
-                } else {
-                    row.child(div.html()).show();
-                    tr.addClass("shown");
-                }
-            });
         };
         that.$nextTick(function() {
             $(document).on("click", "a", function(e) {
@@ -174,6 +165,67 @@ export default {
                 });
             });
             $(that.$data.currentTasks).tab("show");
+            $(document).on("click", ".table td.expandable", function () {
+                var tr = $(this).closest("tr");
+                var row = table.row(tr);
+                var id = tr.data("target");
+                var div = $(id);
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass("shown");
+                } else {
+                    row.child(div.html()).show();
+                    tr.addClass("shown");
+                }
+            });
+            var isShiftKey = false;
+            var lastSelectedRow = undefined;
+            $(document).on("keyup keydown", function(e) {
+                isShiftKey = e.shiftKey;
+            });
+            var getElementsInBetween = function(from, to) {
+                if (from.index() > to.index()) { //ensure that 'from' is before 'to'
+                    from = [to, to = from][0]; //swapping from and to
+                }
+                if (from.is(to)) {
+                    return $([]);
+                } else {
+                    return from.nextUntil(to);
+                }
+            };
+            $(document).on("mousedown", ".table td", function(e) {
+                if ($(this).is(".expandable")) {
+                    return;
+                }
+                var tr = $(this).closest("tr");
+                if (lastSelectedRow && isShiftKey) {
+                    getElementsInBetween(lastSelectedRow, tr).toggleClass("selected");
+                }
+                tr.toggleClass("selected");
+                lastSelectedRow = tr;
+                e.stopPropagation();
+                e.preventDefault();
+            });
+            $(".delete-selected").click(function() {
+                var ids = "";
+                $("tr.selected").each(function() {
+                    if (ids) {
+                        ids += ",";
+                    }
+                    ids += $(this).data("taskid");
+                });
+                window.location.href = "/admin/tasks/deleteMany?ids=" + ids;
+            });
+            $(".reassign-selected").click(function() {
+                var ids = "";
+                $("tr.selected").each(function() {
+                    if (ids) {
+                        ids += ",";
+                    }
+                    ids += $(this).data("taskid");
+                });
+                window.location.href = "/admin/tasks/reassignMany?ids=" + ids;
+            });
         });
     }
 }
@@ -192,7 +244,8 @@ body>.container {
     cursor: pointer;
 }
 .nav-tabs {
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 .table {
     border-spacing: 0;
@@ -208,10 +261,6 @@ pre.description {
     white-space: pre-wrap; 
     word-wrap: break-word;
 }
-.search-group {
-    margin-bottom: 1rem;
-    margin-top: 1rem;
-}
 .fa-minus, .shown .fa-plus {
     display: none;
 }
@@ -220,5 +269,17 @@ pre.description {
 }
 .th-fixed-width {
     width: 1% !important;
+}
+tr.selected:hover {
+    background-color: rgb(175, 215, 255) !important;
+}
+tr.selected {
+    background-color: rgb(105, 145, 185) !important;
+}
+.btn-primary {
+    color: #FFF !important;
+}
+.btn-danger {
+    color: #FFF !important;
 }
 </style>
