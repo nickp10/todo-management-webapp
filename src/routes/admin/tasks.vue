@@ -17,12 +17,6 @@
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
                     </div>
-                    <div class="input-group search-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Search:</span>
-                        </div>
-                        <input v-model="searchText" type="text" name="search" id="search" class="form-control" placeholder="Search" autofocus />
-                    </div>
                     <ul class="nav nav-tabs" id="statusTabs" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link" id="notStarted" data-toggle="tab" href="#notStarted" role="tab" aria-controls="notStarted" aria-selected="false">Not Started</a>
@@ -40,21 +34,21 @@
                     <table class="table table-sm table-hover table-bordered table-striped">
                         <thead>
                             <tr>
+                                <th class="th-fixed-width"></th>
                                 <th>Title</th>
-                                <th style="width: 1%">Assigned&nbsp;To</th>
-                                <th style="width: 1%">Status</th>
-                                <th style="width: 1%">Deadline</th>
-                                <th style="width: 1%">Actions</th>
+                                <th class="th-fixed-width">Assigned&nbsp;To</th>
+                                <th class="th-fixed-width">Status</th>
+                                <th class="th-fixed-width">Deadline</th>
+                                <th class="th-fixed-width">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="task in filterTasks(tasks[currentTasks], searchText)">
-                            <tr v-bind:data-target="'#task' + task.id" class="clickable" v-bind:key="task.id + 'main'">
-                                <td class="text-left">
+                            <tr v-for="task in tasks[currentTasks]" v-bind:data-target="'#task' + task.id" class="clickable" v-bind:key="task.id + 'main'">
+                                <td>
                                     <i class="fa fa-plus" v-bind:id="'task' + task.id + 'plus'"></i>
-                                    <i class="fa fa-minus" style="display: none;" v-bind:id="'task' + task.id + 'minus'"></i>
-                                    &nbsp;{{task.title}}
+                                    <i class="fa fa-minus" v-bind:id="'task' + task.id + 'minus'"></i>
                                 </td>
+                                <td class="text-left">{{task.title}}</td>
                                 <td class="text-left" v-html="formatSpaces(formatUser(task.assignee, users, 'Unassigned'))"></td>
                                 <td class="text-left" v-html="formatSpaces(task.status)"></td>
                                 <td class="text-left" v-html="formatSpaces(formatDate(task.deadline, 'No Deadline'))"></td>
@@ -65,11 +59,23 @@
                                     <a v-bind:href="'/admin/tasks/delete?id=' + task.id" class="btn btn-sm btn-danger">Delete Task</a>
                                 </td>
                             </tr>
-                            <tr v-bind:id="'task' + task.id" v-bind:key="task.id" style="display: none;">
-                                <td colspan="2">
+                            <tr v-if="!tasks[currentTasks] || !tasks[currentTasks].length">
+                                <td colspan="6" class="text-center">There are currently no tasks in this status</td>
+                                <td style="display: none"></td>
+                                <td style="display: none"></td>
+                                <td style="display: none"></td>
+                                <td style="display: none"></td>
+                                <td style="display: none"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div v-for="task in tasks[currentTasks]" v-bind:id="'task' + task.id" v-bind:key="task.id" style="display: none;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
                                     <pre class="description text-left">{{task.description}}</pre>
-                                </td>
-                                <td colspan="3">
+                                </div>
+                                <div class="col">
                                     <div class="text-left"><b>Started: </b><span v-html="formatSpaces(formatDate(task.dateStarted, 'Not Started'))"></span></div>
                                     <div class="text-left"><b>Sent for Review: </b><span v-html="formatSpaces(formatDate(task.dateSentForReview, 'Not Sent for Review'))"></span></div>
                                     <div class="text-left"><b>Completed: </b><span v-html="formatSpaces(formatDate(task.dateCompleted, 'Not Completed'))"></span></div>
@@ -79,14 +85,10 @@
                                         {{task | formatCustomField(customField)}}
                                     </div>
                                     <div class="text-left"><b>Notes: </b><pre class="description">{{task.notes}}</pre></div>
-                                </td>
-                            </tr>
-                            </template>
-                            <tr v-if="!tasks[currentTasks] || !tasks[currentTasks].length">
-                                <td colspan="5" class="text-center">There are currently no tasks in this status</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="text-center">
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
@@ -133,30 +135,43 @@ export default {
         },
         formatSpaces: function(value) {
             return value.replace(/\s/g, "&nbsp;");
-        },
-        filterTasks: function(tasks, searchText) {
-            if (!searchText) {
-                return tasks;
-            }
-            searchText = searchText.toLowerCase();
-            return tasks.filter(function(t) { return t.title.toLowerCase().indexOf(searchText) > -1; });
         }
     },
     mounted: function() {
         var that = this;
-        this.$nextTick(function() {
-            $(document).on("click", ".clickable", function() {
-                var id = $(this).data("target");
-                $(id).toggle("fast");
-                $(id + "plus").toggle();
-                $(id + "minus").toggle();
+        var table = undefined;
+        var createTable = function() {
+            table = $(".table").DataTable({
+                lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "All"]],
+                ordering: false
             });
-            $(document).on("click", ".clickable a", function(e) {
+            $(document).on("click", ".table td", function () {
+                var tr = $(this).closest("tr");
+                var row = table.row(tr);
+                var id = tr.data("target");
+                var div = $(id);
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass("shown");
+                } else {
+                    row.child(div.html()).show();
+                    tr.addClass("shown");
+                }
+            });
+        };
+        that.$nextTick(function() {
+            $(document).on("click", "a", function(e) {
                 e.stopPropagation();
             });
             $("#statusTabs").on("shown.bs.tab", function (e) {
                 var target = $(e.target).attr("href");
+                if (table) {
+                    table.destroy();
+                }
                 that.$data.currentTasks = target;
+                that.$nextTick(function() {
+                    createTable();
+                });
             });
             $(that.$data.currentTasks).tab("show");
         });
@@ -165,7 +180,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
+body>.container {
     max-width: 1150px;
     padding-top: 40px;
     padding-bottom: 40px;
@@ -176,8 +191,17 @@ export default {
 .clickable {
     cursor: pointer;
 }
-.table, .table th {
-    border-top: 0;
+.nav-tabs {
+    margin-bottom: 10px;
+}
+.table {
+    border-spacing: 0;
+}
+.table td {
+    vertical-align: middle;
+}
+.dataTables_length {
+    text-align: left;
 }
 pre.description {
     font-family: inherit;
@@ -187,5 +211,14 @@ pre.description {
 .search-group {
     margin-bottom: 1rem;
     margin-top: 1rem;
+}
+.fa-minus, .shown .fa-plus {
+    display: none;
+}
+.shown .fa-minus, .fa-plus {
+    display: block;
+}
+.th-fixed-width {
+    width: 1% !important;
 }
 </style>

@@ -34,7 +34,6 @@ export function adminTasksGetHelper(req: express.Request, res: express.Response,
         users: users,
         customFields: customFields,
         currentTasks: currentTasks,
-        searchText: "",
         tasks: {
             "#notStarted": tasks.filter(t => t.status === "Not Started"),
             "#inProgress": tasks.filter(t => t.status === "In Progress"),

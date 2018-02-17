@@ -54,6 +54,12 @@ const vueOptions = {
                 script: "/assets/js/tempusdominus-bootstrap-4.min.js"
             },
             {
+                script: "/assets/js/jquery.dataTables.js"
+            },
+            {
+                script: "/assets/js/dataTables.bootstrap4.js"
+            },
+            {
                 style: "/assets/css/bootstrap.min.css"
             },
             {
@@ -67,6 +73,9 @@ const vueOptions = {
             },
             {
                 style: "/assets/css/tempusdominus-bootstrap-4.min.css"
+            },
+            {
+                style: "/assets/css/dataTables.bootstrap4.css"
             },
             {
                 name: "viewport",
