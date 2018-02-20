@@ -178,14 +178,18 @@ export default {
                     tr.addClass("shown");
                 }
             });
+            var isCtrlKey = false;
             var isShiftKey = false;
             var lastSelectedRow = undefined;
             $(document).on("keyup keydown", function(e) {
+                isCtrlKey = e.ctrlKey;
                 isShiftKey = e.shiftKey;
             });
             var getElementsInBetween = function(from, to) {
-                if (from.index() > to.index()) { //ensure that 'from' is before 'to'
-                    from = [to, to = from][0]; //swapping from and to
+                if (from.index() > to.index()) {
+                    var tmp = from;
+                    from = to;
+                    to = tmp;
                 }
                 if (from.is(to)) {
                     return $([]);
@@ -198,17 +202,22 @@ export default {
                     return;
                 }
                 var tr = $(this).closest("tr");
-                if (lastSelectedRow && isShiftKey) {
-                    getElementsInBetween(lastSelectedRow, tr).toggleClass("selected");
+                if (!isCtrlKey) {
+                    $(table.rows().nodes()).removeClass("selected");
                 }
                 tr.toggleClass("selected");
+                var isSelected = tr.is(".selected");
+                if (lastSelectedRow && isShiftKey) {
+                    getElementsInBetween(lastSelectedRow, tr).toggleClass("selected", isSelected);
+                    lastSelectedRow.toggleClass("selected", isSelected);
+                }
                 lastSelectedRow = tr;
                 e.stopPropagation();
                 e.preventDefault();
             });
             $(".delete-selected").click(function() {
                 var ids = "";
-                $("tr.selected").each(function() {
+                $(table.rows(".selected").nodes()).each(function() {
                     if (ids) {
                         ids += ",";
                     }
@@ -218,7 +227,7 @@ export default {
             });
             $(".reassign-selected").click(function() {
                 var ids = "";
-                $("tr.selected").each(function() {
+                $(table.rows(".selected").nodes()).each(function() {
                     if (ids) {
                         ids += ",";
                     }
