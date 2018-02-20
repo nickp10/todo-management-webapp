@@ -1,6 +1,7 @@
 const argv = require("argv");
 const gulp = require("gulp");
 const uglify = require("gulp-uglify");
+const path = require("path");
 const rename = require("gulp-rename");
 const sourcemaps = require("gulp-sourcemaps");
 const typescript = require("gulp-typescript");
@@ -74,7 +75,12 @@ gulp.task("compile", () => {
     if (isDebug) {
         return src.pipe(sourcemaps.init())
             .pipe(tsconfig)
-            .pipe(sourcemaps.write())
+            .pipe(sourcemaps.mapSources((sourcePath, file) => {
+                var from = path.dirname(file.path);
+                var to = path.resolve(path.join(__dirname, "build"));
+                return path.join(path.relative(from, to), sourcePath);
+            }))
+            .pipe(sourcemaps.write(""))
             .pipe(gulp.dest(dest));
     } else {
         return src.pipe(tsconfig)

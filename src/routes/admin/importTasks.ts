@@ -49,15 +49,15 @@ export function adminTasksImportPost(req: express.Request, res: express.Response
             const rows = parseCSVFile(data);
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
-                if (row.length >= 4) {
-                    const assignee = db.get("users").find({ username: row[2] }).value();
+                if (row.length >= 2) {
+                    const assignee = row.length >= 3 ? db.get("users").find({ username: row[2] }).value() : undefined;
                     const task: Task = {
                         id: uuid4(),
                         dateCreated: new Date(),
                         title: row[0],
                         description: row[1],
                         assignee: assignee ? assignee.id : undefined,
-                        deadline: new Date(row[3]),
+                        deadline: row.length >= 4 && row[3] ? new Date(row[3]) : undefined,
                         status: "Not Started"
                     };
                     for (let j = 4; j < row.length; j++) {
