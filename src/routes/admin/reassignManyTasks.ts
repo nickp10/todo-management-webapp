@@ -55,7 +55,15 @@ export function adminTasksReassignManyPost(req: express.Request, res: express.Re
         const newTaskIds = [];
         for (let i = 0; i < taskIds.length; i++) {
             const taskId = taskIds[i];
-            if (!assigneeTasks.find(t => t.id === taskId)) {
+            let found = false;
+            for (let j = 0; j < assigneeTasks.length; j++) {
+                const assigneeTask = assigneeTasks[j];
+                if (assigneeTask.id === taskId) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
                 newTaskIds.push(taskId);
             }
         }

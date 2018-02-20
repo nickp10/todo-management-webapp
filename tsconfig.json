@@ -4,12 +4,6 @@
     "module": "commonjs",
     "newLine": "LF",
     "outDir": "build/",
-    "target": "es6"
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "src/**/*.d.ts"
-  ]
+    "target": "es5"
+  }
 }

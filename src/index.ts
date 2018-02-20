@@ -9,6 +9,7 @@ import * as expressFileUpload from "express-fileupload";
 import * as expressSession from "express-session";
 import expressVue = require("express-vue");
 import * as FileAsync from "lowdb/adapters/FileAsync";
+import * as fs from "fs";
 import * as lowdb from "lowdb";
 import * as path from "path";
 import * as process from "process";
@@ -32,59 +33,29 @@ import { startGet } from "./routes/start";
 const MemoryStore = require("memorystore")(expressSession);
 
 process.chdir(path.join(__dirname, ".."));
-const vueOptions = {
+const vueOptions: any = {
     rootPath: path.join(__dirname, "routes"),
     vue: {
         head: {
-            meta: [{
-                script: "/assets/js/jquery.min.js"
-            },
-            {
-                script: "/assets/js/moment.min.js"
-            },
-            {
-                script: "/assets/js/popper.min.js"
-            },
-            {
-                script: "/assets/js/vue.min.js"
-            },
-            {
-                script: "/assets/js/bootstrap.min.js"
-            },
-            {
-                script: "/assets/js/tempusdominus-bootstrap-4.min.js"
-            },
-            {
-                script: "/assets/js/jquery.dataTables.js"
-            },
-            {
-                script: "/assets/js/dataTables.bootstrap4.js"
-            },
-            {
-                style: "/assets/css/bootstrap.min.css"
-            },
-            {
-                style: "/assets/css/bootstrap-grid.min.css"
-            },
-            {
-                style: "/assets/css/bootstrap-reboot.min.css"
-            },
-            {
-                style: "/assets/css/font-awesome.min.css"
-            },
-            {
-                style: "/assets/css/tempusdominus-bootstrap-4.min.css"
-            },
-            {
-                style: "/assets/css/dataTables.bootstrap4.css"
-            },
-            {
-                name: "viewport",
-                value: "width=device-width, initial-scale=1, shrink-to-fit=no"
-            }]
+            meta: [
+                {
+                    name: "viewport",
+                    value: "width=device-width, initial-scale=1, shrink-to-fit=no"
+                }
+            ]
         }
     }
 };
+const cssFiles = fs.readdirSync(path.join(__dirname, "assets/css"));
+for (let i = 0; i < cssFiles.length; i++) {
+    const cssFile = cssFiles[i];
+    vueOptions.vue.head.meta.push({ style: `/assets/css/${cssFile}` });
+}
+const jsFiles = fs.readdirSync(path.join(__dirname, "assets/js"));
+for (let i = 0; i < jsFiles.length; i++) {
+    const jsFile = jsFiles[i];
+    vueOptions.vue.head.meta.push({ script: `/assets/js/${jsFile}` });
+}
 const dbAdapter = new FileAsync<DBSchema>(args.dbPath);
 lowdb(dbAdapter).then((db) => {
     const id= uuid4();
