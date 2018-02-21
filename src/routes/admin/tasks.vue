@@ -33,44 +33,7 @@
                             <a class="nav-link" id="completed" data-toggle="tab" href="#completed" role="tab" aria-controls="completed" aria-selected="false">Completed</a>
                         </li>
                     </ul>
-                    <table class="table table-sm table-hover table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th class="th-fixed-width"></th>
-                                <th>Title</th>
-                                <th class="th-fixed-width">Assigned&nbsp;To</th>
-                                <th class="th-fixed-width">Status</th>
-                                <th class="th-fixed-width">Deadline</th>
-                                <th class="th-fixed-width">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="task in tasks[currentTasks]" v-bind:data-target="'#task' + task.id" v-bind:data-taskid="task.id" class="clickable" v-bind:key="task.id + 'main'">
-                                <td class="expandable">
-                                    <i class="fa fa-plus" v-bind:id="'task' + task.id + 'plus'"></i>
-                                    <i class="fa fa-minus" v-bind:id="'task' + task.id + 'minus'"></i>
-                                </td>
-                                <td class="text-left">{{task.title}}</td>
-                                <td class="text-left" v-html="formatSpaces(formatUser(task.assignee, users, 'Unassigned'))"></td>
-                                <td class="text-left" v-html="formatSpaces(task.status)"></td>
-                                <td class="text-left" v-html="formatSpaces(formatDate(task.deadline, 'No Deadline'))"></td>
-                                <td style="white-space: nowrap">
-                                    <a v-if="task.status === 'Completed' || task.status === 'In Review'" v-bind:href="'/admin/tasks/reopen?id=' + task.id" class="btn btn-sm btn-warning">Reopen Task</a>
-                                    <a v-if="task.status === 'In Review'" v-bind:href="'/admin/tasks/complete?id=' + task.id" class="btn btn-sm btn-warning">Complete Task</a>
-                                    <a v-bind:href="'/admin/tasks/edit?id=' + task.id" class="btn btn-sm btn-primary">Edit Task</a>
-                                    <a v-bind:href="'/admin/tasks/delete?id=' + task.id" class="btn btn-sm btn-danger">Delete Task</a>
-                                </td>
-                            </tr>
-                            <tr v-if="!tasks[currentTasks] || !tasks[currentTasks].length">
-                                <td colspan="6" class="text-center">There are currently no tasks in this status</td>
-                                <td style="display: none"></td>
-                                <td style="display: none"></td>
-                                <td style="display: none"></td>
-                                <td style="display: none"></td>
-                                <td style="display: none"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <table class="table table-sm table-hover table-bordered table-striped"></table>
                     <div v-for="task in tasks[currentTasks]" v-bind:id="'task' + task.id" v-bind:key="task.id" style="display: none;">
                         <div class="container">
                             <div class="row">
@@ -146,6 +109,64 @@ export default {
         var table = undefined;
         var createTable = function() {
             table = $(".table").DataTable({
+                data: that.$data.tasks[that.$data.currentTasks],
+                language: {
+                    emptyTable: "There are currently no tasks in this status"
+                },
+                createdRow: function(row, data, index) {
+                    $("td", row).first().addClass("expandable").addClass("text-center");
+                    $("td", row).last().addClass("text-center").css("white-space", "nowrap");
+                    $("td", row).addClass("td-fixed-width");
+                    $("td", row).eq(1).removeClass("td-fixed-width");
+                },
+                columns: [
+                    {
+                        title: "",
+                        render: function(data, type, task) {
+                            return `<i class="fa fa-plus"></i><i class="fa fa-minus"></i>`
+                        }
+                    },
+                    {
+                        title: "Title",
+                        data: "title"
+                    },
+                    {
+                        title: "Assigned&nbsp;To",
+                        data: "assignee",
+                        render: function(data, type, task) {
+                            return that.formatSpaces(that.formatUser(data, that.$data.users, "Unassigned"));
+                        }
+                    },
+                    {
+                        title: "Status",
+                        data: "status",
+                        render: function(data, type, task) {
+                            return that.formatSpaces(data);
+                        }
+                    },
+                    {
+                        title: "Deadline",
+                        data: "deadline",
+                        render: function(data, type, task) {
+                            return that.formatSpaces(that.formatDate(data, "No&nbsp;Deadline"));
+                        }
+                    },
+                    {
+                        title: "Actions",
+                        render: function(data, type, task) {
+                            var html = "";
+                            if (task.status === "Completed" || task.status === "In Review") {
+                                html += ` <a href="/admin/tasks/reopen?id=${task.id}" class="btn btn-sm btn-warning">Reopen Task</a>`;
+                            }
+                            if (task.status === "In Review") {
+                                html += ` <a href="/admin/tasks/complete?id=${task.id}" class="btn btn-sm btn-warning">Complete Task</a>`;
+                            }
+                            html += ` <a href="/admin/tasks/edit?id=${task.id}" class="btn btn-sm btn-primary">Edit Task</a>`;
+                            html += ` <a href="/admin/tasks/delete?id=${task.id}" class="btn btn-sm btn-danger">Delete Task</a>`;
+                            return html;
+                        }
+                    }
+                ],
                 lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "All"]],
                 ordering: false
             });
@@ -155,11 +176,10 @@ export default {
                 e.stopPropagation();
             });
             $("#statusTabs").on("shown.bs.tab", function (e) {
-                var target = $(e.target).attr("href");
                 if (table) {
                     table.destroy();
                 }
-                that.$data.currentTasks = target;
+                that.$data.currentTasks = $(e.target).attr("href");
                 that.$nextTick(function() {
                     createTable();
                 });
@@ -168,8 +188,7 @@ export default {
             $(document).on("click", ".table td.expandable", function () {
                 var tr = $(this).closest("tr");
                 var row = table.row(tr);
-                var id = tr.data("target");
-                var div = $(id);
+                var div = $(`#task` + row.data().id);
                 if (row.child.isShown()) {
                     row.child.hide();
                     tr.removeClass("shown");
@@ -217,21 +236,21 @@ export default {
             });
             $(".delete-selected").click(function() {
                 var ids = "";
-                $(table.rows(".selected").nodes()).each(function() {
+                table.rows(".selected").data().each(function(row) {
                     if (ids) {
                         ids += ",";
                     }
-                    ids += $(this).data("taskid");
+                    ids += row.id;
                 });
                 window.location.href = "/admin/tasks/deleteMany?ids=" + ids;
             });
             $(".reassign-selected").click(function() {
                 var ids = "";
-                $(table.rows(".selected").nodes()).each(function() {
+                table.rows(".selected").data().each(function(row) {
                     if (ids) {
                         ids += ",";
                     }
-                    ids += $(this).data("taskid");
+                    ids += row.id;
                 });
                 window.location.href = "/admin/tasks/reassignMany?ids=" + ids;
             });
@@ -260,6 +279,8 @@ body>.container {
     border-spacing: 0;
 }
 .table td {
+    cursor: pointer;
+    text-align: left;
     vertical-align: middle;
 }
 .dataTables_length {
@@ -276,7 +297,7 @@ pre.description {
 .shown .fa-minus, .fa-plus {
     display: block;
 }
-.th-fixed-width {
+.td-fixed-width {
     width: 1% !important;
 }
 tr.selected:hover {

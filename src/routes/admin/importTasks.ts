@@ -67,9 +67,10 @@ export function adminTasksImportPost(req: express.Request, res: express.Response
                             task[customField.id] = value;
                         }
                     }
-                    db.get("tasks").push(task).write();
+                    db.get("tasks").push(task).value();
                 }
             }
+            db.write();
         }
     }
     adminTasksGet(req, res, db);
