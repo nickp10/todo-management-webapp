@@ -244,6 +244,7 @@ export default {
                 language: {
                     emptyTable: "There are currently no tasks in this status"
                 },
+                iDisplayLength: that.$data.tasksPerPage,
                 lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "All"]],
                 order: [[4, "desc"]]
             });
@@ -252,11 +253,30 @@ export default {
             $(document).on("click", "a", function(e) {
                 e.stopPropagation();
             });
+            $(".table").on("length.dt", function(e, settings, length) {
+                that.$data.tasksPerPage = length;
+                $.ajax({
+                    url: "/admin/tasks/setTasksPerPage",
+                    type: "get",
+                    data: {
+                        tasksPerPage: that.$data.tasksPerPage
+                    },
+                    success: function() { }
+                });
+            });
             $("#statusTabs").on("shown.bs.tab", function (e) {
                 if (table) {
                     table.destroy();
                 }
                 that.$data.currentTasks = $(e.target).attr("href");
+                $.ajax({
+                    url: "/admin/tasks/setCurrentTasks",
+                    type: "get",
+                    data: {
+                        currentTasks: that.$data.currentTasks
+                    },
+                    success: function() { }
+                });
                 that.$nextTick(function() {
                     createTable();
                 });

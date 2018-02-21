@@ -3,7 +3,7 @@ import * as express from "express";
 import * as lowdb from "lowdb";
 import * as moment from "moment";
 import * as uuid4 from "uuid/v4";
-import { adminTasksGetHelper, getStatusTag } from "./tasks";
+import { adminTasksGet } from "./tasks";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
@@ -86,7 +86,6 @@ export function adminTasksEditPost(req: express.Request, res: express.Response, 
     if (error) {
         adminTasksEditGetHelper(req, res, db, updatedTask.id, error);
     } else {
-        const currentTasks = getStatusTag(updatedTask.status);
-        adminTasksGetHelper(req, res, db, currentTasks);
+        adminTasksGet(req, res, db);
     }
 };

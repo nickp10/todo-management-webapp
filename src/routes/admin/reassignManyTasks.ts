@@ -3,7 +3,7 @@ import * as express from "express";
 import * as lowdb from "lowdb";
 import * as moment from "moment";
 import * as uuid4 from "uuid/v4";
-import { adminTasksGet, adminTasksGetHelper, getStatusTag } from "./tasks";
+import { adminTasksGet } from "./tasks";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
@@ -73,21 +73,10 @@ export function adminTasksReassignManyPost(req: express.Request, res: express.Re
             return;
         }
     }
-    let currentTasks = "";
     for (let i = 0; i < taskIds.length; i++) {
         const taskId = taskIds[i];
-        if (!currentTasks) {
-            const task = db.get("tasks").find({ id: taskId }).value();
-            if (task) {
-                currentTasks = getStatusTag(task.status);
-            }
-        }
         db.get("tasks").find({ id: taskId }).assign({ assignee: assigneeValue }).value();
     }
     db.write();
-    if (currentTasks) {
-        adminTasksGetHelper(req, res, db, currentTasks);
-    } else {
-        adminTasksGet(req, res, db);
-    }
+    adminTasksGet(req, res, db);
 };

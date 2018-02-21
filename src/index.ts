@@ -16,7 +16,7 @@ import * as process from "process";
 import * as uuid4 from "uuid/v4";
 import { adminCustomFieldsGet, adminCustomFieldsPost, adminCustomFieldsDelete } from "./routes/admin/customFields";
 import { adminTasksEditGet, adminTasksEditPost } from "./routes/admin/editTask";
-import { adminTasksGet, adminTasksDelete, adminTasksDeleteMany, adminTasksComplete, adminTasksReopen } from "./routes/admin/tasks";
+import { adminTasksGet, adminTasksDelete, adminTasksDeleteMany, adminTasksComplete, adminTasksReopen, adminTasksSetCurrentTasks, adminTasksSetTasksPerPage } from "./routes/admin/tasks";
 import { adminTasksImportGet, adminTasksImportPost } from "./routes/admin/importTasks";
 import { adminTasksReassignManyGet, adminTasksReassignManyPost } from "./routes/admin/reassignManyTasks";
 import { adminUsersEditGet, adminUsersEditPost } from "./routes/admin/editUser";
@@ -113,6 +113,8 @@ lowdb(dbAdapter).then((db) => {
     app.post("/admin/tasks/reassignMany", (req, res) => adminTasksReassignManyPost(req, res, db));
     app.get("/admin/tasks/complete", (req, res) => adminTasksComplete(req, res, db));
     app.get("/admin/tasks/reopen", (req, res) => adminTasksReopen(req, res, db));
+    app.get("/admin/tasks/setCurrentTasks", (req, res) => adminTasksSetCurrentTasks(req, res, db));
+    app.get("/admin/tasks/setTasksPerPage", (req, res) => adminTasksSetTasksPerPage(req, res, db));
     app.get("/admin/users", (req, res) => adminUsersGet(req, res, db));
     app.get("/admin/users/delete", (req, res) => adminUsersDelete(req, res, db));
     app.get("/admin/users/edit", (req, res) => adminUsersEditGet(req, res, db));
