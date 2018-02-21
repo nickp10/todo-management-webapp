@@ -2,6 +2,7 @@ import { DBSchema } from "../../interfaces";
 import * as express from "express";
 import * as lowdb from "lowdb";
 import * as moment from "moment";
+import * as utils from "../../utils";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
@@ -20,8 +21,8 @@ export function adminTasksGet(req: express.Request, res: express.Response, db: l
     const data = {
         users: users,
         customFields: customFields,
-        currentTasks: req.session.currentTasks || "#notStarted",
-        tasksPerPage: req.session.tasksPerPage || 10,
+        currentTasks: req.session.user.adminCurrentTasksTab || "#notStarted",
+        tasksPerPage: req.session.user.adminTasksPerPage || 10,
         tasks: {
             "#notStarted": tasks.filter(t => t.status === "Not Started"),
             "#inProgress": tasks.filter(t => t.status === "In Progress"),
@@ -138,7 +139,8 @@ export function adminTasksSetCurrentTasks(req: express.Request, res: express.Res
         res.sendStatus(403);
         return;
     }
-    req.session.currentTasks = req.query.currentTasks;
+    req.session.user.adminCurrentTasksTab = req.query.currentTasks;
+    db.get("users").find({ id: req.session.user.id }).assign({ adminCurrentTasksTab: req.session.user.adminCurrentTasksTab }).write();
     res.sendStatus(200);
 }
 
@@ -147,6 +149,7 @@ export function adminTasksSetTasksPerPage(req: express.Request, res: express.Res
         res.sendStatus(403);
         return;
     }
-    req.session.tasksPerPage = req.query.tasksPerPage;
+    req.session.user.adminTasksPerPage = utils.coerceInt(req.query.tasksPerPage);
+    db.get("users").find({ id: req.session.user.id }).assign({ adminTasksPerPage: req.session.user.adminTasksPerPage }).write();
     res.sendStatus(200);
 }

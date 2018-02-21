@@ -113,6 +113,18 @@ export default {
     mounted: function() {
         var that = this;
         var table = undefined;
+        var getElementsInBetween = function(from, to) {
+            if (from.index() > to.index()) {
+                var tmp = from;
+                from = to;
+                to = tmp;
+            }
+            if (from.is(to)) {
+                return $([]);
+            } else {
+                return from.nextUntil(to);
+            }
+        };
         var selectedIds = function() {
             return table.rows(".selected").data().map(function(item) { return item.id; }).join(",");
         };
@@ -124,127 +136,126 @@ export default {
             $(".reopen-selected").toggle(isInReview || isCompleted);
             $(".complete-selected").toggle(isInReview);
             $(".selected-action").toggleClass("disabled", true);
-            var tableColumns = [
-                {
-                    title: "",
-                    orderable: false,
-                    searchable: false,
-                    render: function(data, type, task) {
-                        return `<i class="fa fa-plus"></i><i class="fa fa-minus"></i>`;
-                    }
-                },
-                {
-                    title: "Title",
-                    data: "title"
-                },
-                {
-                    title: "Assigned&nbsp;To",
-                    data: "assignee",
-                    render: function(data, type, task) {
-                        return that.formatSpaces(that.formatUser(data, that.$data.users, "Unassigned"));
-                    }
-                },
-                {
-                    title: "Status",
-                    data: "status",
-                    orderable: false,
-                    searchable: false,
-                    visible: false,
-                    render: function(data, type, task) {
-                        return that.formatSpaces(data);
-                    }
-                },
-                {
-                    title: "Date&nbsp;Created",
-                    data: "dateCreated",
-                    searchable: false,
-                    visible: false,
-                    render: {
-                        _: function(data, type, task) {
-                            return that.formatSpaces(that.formatDate(data, "Not&nbsp;Created"));
-                        },
-                        sort: function(data, type, task) {
-                            return data ? moment(data).valueOf() : 0;
-                        }
-                    }
-                },
-                {
-                    title: "Date&nbsp;Started",
-                    data: "dateStarted",
-                    searchable: false,
-                    visible: isInProgress || isInReview || isCompleted,
-                    render: {
-                        _: function(data, type, task) {
-                            return that.formatSpaces(that.formatDate(data, "Not&nbsp;Started"));
-                        },
-                        sort: function(data, type, task) {
-                            return data ? moment(data).valueOf() : 0;
-                        }
-                    }
-                },
-                {
-                    title: "Submitted&nbsp;Date",
-                    data: "dateSentForReview",
-                    searchable: false,
-                    visible: isInReview,
-                    render: {
-                        _: function(data, type, task) {
-                            return that.formatSpaces(that.formatDate(data, "Not&nbsp;Submitted"));
-                        },
-                        sort: function(data, type, task) {
-                            return data ? moment(data).valueOf() : 0;
-                        }
-                    }
-                },
-                {
-                    title: "Completed&nbsp;Date",
-                    data: "dateCompleted",
-                    searchable: false,
-                    visible: isCompleted,
-                    render: {
-                        _: function(data, type, task) {
-                            return that.formatSpaces(that.formatDate(data, "Not&nbsp;Completed"));
-                        },
-                        sort: function(data, type, task) {
-                            return data ? moment(data).valueOf() : 0;
-                        }
-                    }
-                },
-                {
-                    title: "Deadline",
-                    data: "deadline",
-                    searchable: false,
-                    visible: isNotStarted || isInProgress,
-                    render: {
-                        _: function(data, type, task) {
-                            return that.formatSpaces(that.formatDate(data, "No&nbsp;Deadline"));
-                        },
-                        sort: function(data, type, task) {
-                            return data ? moment(data).valueOf() : 0;
-                        }
-                    }
-                },
-                {
-                    title: "Actions",
-                    orderable: false,
-                    searchable: false,
-                    render: function(data, type, task) {
-                        var html = "";
-                        if (task.status === "Completed" || task.status === "In Review") {
-                            html += ` <a href="/admin/tasks/reopen?id=${task.id}" class="btn btn-sm btn-warning">Reopen</a>`;
-                        }
-                        if (task.status === "In Review") {
-                            html += ` <a href="/admin/tasks/complete?id=${task.id}" class="btn btn-sm btn-warning">Complete</a>`;
-                        }
-                        html += ` <a href="/admin/tasks/edit?id=${task.id}" class="btn btn-sm btn-primary">Edit</a>`;
-                        html += ` <a href="/admin/tasks/delete?id=${task.id}" class="btn btn-sm btn-danger">Delete</a>`;
-                        return html;
-                    }
-                }
-            ];
             table = $(".table").DataTable({
                 data: that.$data.tasks[that.$data.currentTasks],
-                columns: tableColumns,
+                columns: [
+                    {
+                        title: "",
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, task) {
+                            return `<i class="fa fa-plus"></i><i class="fa fa-minus"></i>`;
+                        }
+                    },
+                    {
+                        title: "Title",
+                        data: "title"
+                    },
+                    {
+                        title: "Assigned&nbsp;To",
+                        data: "assignee",
+                        render: function(data, type, task) {
+                            return that.formatSpaces(that.formatUser(data, that.$data.users, "Unassigned"));
+                        }
+                    },
+                    {
+                        title: "Status",
+                        data: "status",
+                        orderable: false,
+                        searchable: false,
+                        visible: false,
+                        render: function(data, type, task) {
+                            return that.formatSpaces(data);
+                        }
+                    },
+                    {
+                        title: "Date&nbsp;Created",
+                        data: "dateCreated",
+                        searchable: false,
+                        visible: false,
+                        render: {
+                            _: function(data, type, task) {
+                                return that.formatSpaces(that.formatDate(data, "Not&nbsp;Created"));
+                            },
+                            sort: function(data, type, task) {
+                                return data ? moment(data).valueOf() : 0;
+                            }
+                        }
+                    },
+                    {
+                        title: "Date&nbsp;Started",
+                        data: "dateStarted",
+                        searchable: false,
+                        visible: isInProgress || isInReview || isCompleted,
+                        render: {
+                            _: function(data, type, task) {
+                                return that.formatSpaces(that.formatDate(data, "Not&nbsp;Started"));
+                            },
+                            sort: function(data, type, task) {
+                                return data ? moment(data).valueOf() : 0;
+                            }
+                        }
+                    },
+                    {
+                        title: "Submitted&nbsp;Date",
+                        data: "dateSentForReview",
+                        searchable: false,
+                        visible: isInReview,
+                        render: {
+                            _: function(data, type, task) {
+                                return that.formatSpaces(that.formatDate(data, "Not&nbsp;Submitted"));
+                            },
+                            sort: function(data, type, task) {
+                                return data ? moment(data).valueOf() : 0;
+                            }
+                        }
+                    },
+                    {
+                        title: "Completed&nbsp;Date",
+                        data: "dateCompleted",
+                        searchable: false,
+                        visible: isCompleted,
+                        render: {
+                            _: function(data, type, task) {
+                                return that.formatSpaces(that.formatDate(data, "Not&nbsp;Completed"));
+                            },
+                            sort: function(data, type, task) {
+                                return data ? moment(data).valueOf() : 0;
+                            }
+                        }
+                    },
+                    {
+                        title: "Deadline",
+                        data: "deadline",
+                        searchable: false,
+                        visible: isNotStarted || isInProgress,
+                        render: {
+                            _: function(data, type, task) {
+                                return that.formatSpaces(that.formatDate(data, "No&nbsp;Deadline"));
+                            },
+                            sort: function(data, type, task) {
+                                return data ? moment(data).valueOf() : 0;
+                            }
+                        }
+                    },
+                    {
+                        title: "Actions",
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, task) {
+                            var html = "";
+                            if (task.status === "Completed" || task.status === "In Review") {
+                                html += ` <a href="/admin/tasks/reopen?id=${task.id}" class="btn btn-sm btn-warning">Reopen</a>`;
+                            }
+                            if (task.status === "In Review") {
+                                html += ` <a href="/admin/tasks/complete?id=${task.id}" class="btn btn-sm btn-warning">Complete</a>`;
+                            }
+                            html += ` <a href="/admin/tasks/edit?id=${task.id}" class="btn btn-sm btn-primary">Edit</a>`;
+                            html += ` <a href="/admin/tasks/delete?id=${task.id}" class="btn btn-sm btn-danger">Delete</a>`;
+                            return html;
+                        }
+                    }
+                ],
                 createdRow: function(row, data, index) {
                     $("td", row).first().addClass("expandable").addClass("text-center");
                     $("td", row).last().addClass("text-center").css("white-space", "nowrap");
@@ -254,7 +265,7 @@ export default {
                 language: {
                     emptyTable: "There are currently no tasks in this status"
                 },
-                pageLength: parseInt(that.$data.tasksPerPage),
+                pageLength: that.$data.tasksPerPage,
                 lengthMenu: [[-1, 10, 50, 100], ["All", 10, 50, 100]],
                 order: [[4, "desc"]]
             });
@@ -264,7 +275,7 @@ export default {
                 e.stopPropagation();
             });
             $(".table").on("length.dt", function(e, settings, length) {
-                that.$data.tasksPerPage = length;
+                that.$data.tasksPerPage = parseInt(length);
                 $.ajax({
                     url: "/admin/tasks/setTasksPerPage",
                     type: "get",
@@ -311,18 +322,6 @@ export default {
                 isCtrlKey = e.ctrlKey;
                 isShiftKey = e.shiftKey;
             });
-            var getElementsInBetween = function(from, to) {
-                if (from.index() > to.index()) {
-                    var tmp = from;
-                    from = to;
-                    to = tmp;
-                }
-                if (from.is(to)) {
-                    return $([]);
-                } else {
-                    return from.nextUntil(to);
-                }
-            };
             $(document).on("mousedown", ".table td", function(e) {
                 if ($(this).is(".expandable")) {
                     return;

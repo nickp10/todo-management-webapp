@@ -11,6 +11,8 @@ export interface User {
     isAdmin: boolean;
     isRoot: boolean;
     maxTasks: number;
+    adminCurrentTasksTab?: string;
+    adminTasksPerPage?: number;
 }
 
 export interface Task {
