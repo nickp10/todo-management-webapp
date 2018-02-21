@@ -100,11 +100,13 @@ export default {
             if (!Array.isArray(users)) {
                 return failString;
             }
-            var user = users.find(function(u) { return u.id === userID });
-            if (!user) {
-                return failString;
+            for (var i = 0; i < users.length; i++) {
+                var user = users[i];
+                if (user.id === userID) {
+                    return user.username;
+                }
             }
-            return user.username;
+            return failString;
         },
         formatSpaces: function(value) {
             return value.replace(/\s/g, "&nbsp;");
