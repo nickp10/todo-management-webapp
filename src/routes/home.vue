@@ -71,6 +71,7 @@ export default {
 }
 pre.description {
     font-family: inherit;
+    font-size: inherit;
     white-space: pre-wrap; 
     word-wrap: break-word;
 }

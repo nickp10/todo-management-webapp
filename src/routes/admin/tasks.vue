@@ -16,10 +16,10 @@
                     <div class="text-center">
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
-                        <a class="btn btn-primary reassign-selected selected-action disabled">Reassign Selection</a>
-                        <a class="btn btn-warning reopen-selected selected-action disabled">Reopen Selection</a>
-                        <a class="btn btn-warning complete-selected selected-action disabled">Complete Selection</a>
-                        <a class="btn btn-danger delete-selected selected-action disabled">Delete Selection</a>
+                        <a class="btn btn-primary reassign-selected selected-action">Reassign Selection</a>
+                        <a class="btn btn-warning reopen-selected selected-action">Reopen Selection</a>
+                        <a class="btn btn-warning complete-selected selected-action">Complete Selection</a>
+                        <a class="btn btn-danger delete-selected selected-action">Delete Selection</a>
                     </div>
                     <ul class="nav nav-tabs" id="statusTabs" role="tablist">
                         <li class="nav-item">
@@ -61,10 +61,10 @@
                     <div class="text-center">
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
-                        <a class="btn btn-primary reassign-selected selected-action disabled">Reassign Selection</a>
-                        <a class="btn btn-warning reopen-selected selected-action disabled">Reopen Selection</a>
-                        <a class="btn btn-warning complete-selected selected-action disabled">Complete Selection</a>
-                        <a class="btn btn-danger delete-selected selected-action disabled">Delete Selection</a>
+                        <a class="btn btn-primary reassign-selected selected-action">Reassign Selection</a>
+                        <a class="btn btn-warning reopen-selected selected-action">Reopen Selection</a>
+                        <a class="btn btn-warning complete-selected selected-action">Complete Selection</a>
+                        <a class="btn btn-danger delete-selected selected-action">Delete Selection</a>
                     </div>
                 </div>
             </div>
@@ -123,6 +123,7 @@ export default {
             var isCompleted = that.$data.currentTasks === "#completed";
             $(".reopen-selected").toggle(isInReview || isCompleted);
             $(".complete-selected").toggle(isInReview);
+            $(".selected-action").toggleClass("disabled", true);
             var tableColumns = [
                 {
                     title: "",
@@ -395,6 +396,7 @@ body>.container {
 }
 pre.description {
     font-family: inherit;
+    font-size: inherit;
     white-space: pre-wrap; 
     word-wrap: break-word;
 }
