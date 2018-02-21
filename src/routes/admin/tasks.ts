@@ -84,6 +84,24 @@ export function adminTasksComplete(req: express.Request, res: express.Response, 
     adminTasksGet(req, res, db);
 };
 
+export function adminTasksCompleteMany(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    if (!req.session.user) {
+        loginGet(req, res, db);
+        return;
+    }
+    if (!req.session.user.isAdmin) {
+        homeGet(req, res, db);
+        return;
+    }
+    const ids = req.query.ids.split(",");
+    for (let i = 0; i < ids.length; i++) {
+        const id = ids[i];
+        db.get("tasks").find({ id: id }).assign({ dateCompleted: new Date(), status: "Completed", completedBy: req.session.user.id }).value();
+    }
+    db.write();
+    adminTasksGet(req, res, db);
+};
+
 export function adminTasksReopen(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
     if (!req.session.user) {
         loginGet(req, res, db);
@@ -94,6 +112,24 @@ export function adminTasksReopen(req: express.Request, res: express.Response, db
         return;
     }
     db.get("tasks").find({ id: req.query.id }).assign({ dateStarted: "", dateCompleted: "", dateSentForReview: "", completedBy: "", status: "Not Started" }).write();
+    adminTasksGet(req, res, db);
+};
+
+export function adminTasksReopenMany(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+    if (!req.session.user) {
+        loginGet(req, res, db);
+        return;
+    }
+    if (!req.session.user.isAdmin) {
+        homeGet(req, res, db);
+        return;
+    }
+    const ids = req.query.ids.split(",");
+    for (let i = 0; i < ids.length; i++) {
+        const id = ids[i];
+        db.get("tasks").find({ id: id }).assign({ dateStarted: "", dateCompleted: "", dateSentForReview: "", completedBy: "", status: "Not Started" }).value();
+    }
+    db.write();
     adminTasksGet(req, res, db);
 };
 

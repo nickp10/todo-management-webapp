@@ -16,8 +16,10 @@
                     <div class="text-center">
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
-                        <a class="btn btn-primary reassign-selected">Reassign Selected Tasks</a>
-                        <a class="btn btn-danger delete-selected">Delete Selected Tasks</a>
+                        <a class="btn btn-primary reassign-selected selected-action disabled">Reassign Selection</a>
+                        <a class="btn btn-warning reopen-selected selected-action disabled">Reopen Selection</a>
+                        <a class="btn btn-warning complete-selected selected-action disabled">Complete Selection</a>
+                        <a class="btn btn-danger delete-selected selected-action disabled">Delete Selection</a>
                     </div>
                     <ul class="nav nav-tabs" id="statusTabs" role="tablist">
                         <li class="nav-item">
@@ -59,8 +61,10 @@
                     <div class="text-center">
                         <a href="/admin/tasks/edit" class="btn btn-primary">Add Task</a>
                         <a href="/admin/tasks/import" class="btn btn-primary">Import Tasks</a>
-                        <a class="btn btn-primary reassign-selected">Reassign Selected Tasks</a>
-                        <a class="btn btn-danger delete-selected">Delete Selected Tasks</a>
+                        <a class="btn btn-primary reassign-selected selected-action disabled">Reassign Selection</a>
+                        <a class="btn btn-warning reopen-selected selected-action disabled">Reopen Selection</a>
+                        <a class="btn btn-warning complete-selected selected-action disabled">Complete Selection</a>
+                        <a class="btn btn-danger delete-selected selected-action disabled">Delete Selection</a>
                     </div>
                 </div>
             </div>
@@ -109,11 +113,16 @@ export default {
     mounted: function() {
         var that = this;
         var table = undefined;
+        var selectedIds = function() {
+            return table.rows(".selected").data().map(function(item) { return item.id; }).join(",");
+        };
         var createTable = function() {
             var isNotStarted = that.$data.currentTasks === "#notStarted";
             var isInProgress = that.$data.currentTasks === "#inProgress";
             var isInReview = that.$data.currentTasks === "#inReview";
             var isCompleted = that.$data.currentTasks === "#completed";
+            $(".reopen-selected").toggle(isInReview || isCompleted);
+            $(".complete-selected").toggle(isInReview);
             var tableColumns = [
                 {
                     title: "",
@@ -244,8 +253,8 @@ export default {
                 language: {
                     emptyTable: "There are currently no tasks in this status"
                 },
-                iDisplayLength: that.$data.tasksPerPage,
-                lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "All"]],
+                pageLength: parseInt(that.$data.tasksPerPage),
+                lengthMenu: [[-1, 10, 50, 100], ["All", 10, 50, 100]],
                 order: [[4, "desc"]]
             });
         };
@@ -328,28 +337,29 @@ export default {
                     lastSelectedRow.toggleClass("selected", isSelected);
                 }
                 lastSelectedRow = tr;
+                $(".selected-action").toggleClass("disabled", !selectedIds());
                 e.stopPropagation();
                 e.preventDefault();
             });
             $(".delete-selected").click(function() {
-                var ids = "";
-                table.rows(".selected").data().each(function(row) {
-                    if (ids) {
-                        ids += ",";
-                    }
-                    ids += row.id;
-                });
-                window.location.href = "/admin/tasks/deleteMany?ids=" + ids;
+                if (!$(this).is(".disabled")) {
+                    window.location.href = "/admin/tasks/deleteMany?ids=" + selectedIds();
+                }
             });
             $(".reassign-selected").click(function() {
-                var ids = "";
-                table.rows(".selected").data().each(function(row) {
-                    if (ids) {
-                        ids += ",";
-                    }
-                    ids += row.id;
-                });
-                window.location.href = "/admin/tasks/reassignMany?ids=" + ids;
+                if (!$(this).is(".disabled")) {
+                    window.location.href = "/admin/tasks/reassignMany?ids=" + selectedIds();
+                }
+            });
+            $(".complete-selected").click(function() {
+                if (!$(this).is(".disabled")) {
+                    window.location.href = "/admin/tasks/completeMany?ids=" + selectedIds();
+                }
+            });
+            $(".reopen-selected").click(function() {
+                if (!$(this).is(".disabled")) {
+                    window.location.href = "/admin/tasks/reopenMany?ids=" + selectedIds();
+                }
             });
         });
     }
