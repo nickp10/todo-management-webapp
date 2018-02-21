@@ -41,8 +41,10 @@
                                     <pre class="description text-left">{{task.description}}</pre>
                                 </div>
                                 <div class="col">
+                                    <div class="text-left"><b>Status: </b><span v-html="task.status"></span></div>
+                                    <div class="text-left"><b>Deadline: </b><span v-html="formatSpaces(formatDate(task.deadline, 'No Deadline'))"></span></div>
                                     <div class="text-left"><b>Started: </b><span v-html="formatSpaces(formatDate(task.dateStarted, 'Not Started'))"></span></div>
-                                    <div class="text-left"><b>Sent for Review: </b><span v-html="formatSpaces(formatDate(task.dateSentForReview, 'Not Sent for Review'))"></span></div>
+                                    <div class="text-left"><b>Submitted: </b><span v-html="formatSpaces(formatDate(task.dateSentForReview, 'Not Submitted'))"></span></div>
                                     <div class="text-left"><b>Completed: </b><span v-html="formatSpaces(formatDate(task.dateCompleted, 'Not Completed'))"></span></div>
                                     <div class="text-left"><b>Completed By: </b><span v-html="formatSpaces(formatUser(task.completedBy, users, 'Not Completed'))"></span></div>
                                     <div v-for="customField in customFields" class="text-left" v-bind:key="customField.id">
@@ -108,67 +110,142 @@ export default {
         var that = this;
         var table = undefined;
         var createTable = function() {
+            var isNotStarted = that.$data.currentTasks === "#notStarted";
+            var isInProgress = that.$data.currentTasks === "#inProgress";
+            var isInReview = that.$data.currentTasks === "#inReview";
+            var isCompleted = that.$data.currentTasks === "#completed";
+            var tableColumns = [
+                {
+                    title: "",
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, task) {
+                        return `<i class="fa fa-plus"></i><i class="fa fa-minus"></i>`;
+                    }
+                },
+                {
+                    title: "Title",
+                    data: "title"
+                },
+                {
+                    title: "Assigned&nbsp;To",
+                    data: "assignee",
+                    render: function(data, type, task) {
+                        return that.formatSpaces(that.formatUser(data, that.$data.users, "Unassigned"));
+                    }
+                },
+                {
+                    title: "Status",
+                    data: "status",
+                    orderable: false,
+                    searchable: false,
+                    visible: false,
+                    render: function(data, type, task) {
+                        return that.formatSpaces(data);
+                    }
+                },
+                {
+                    title: "Date&nbsp;Created",
+                    data: "dateCreated",
+                    searchable: false,
+                    visible: false,
+                    render: {
+                        _: function(data, type, task) {
+                            return that.formatSpaces(that.formatDate(data, "Not&nbsp;Created"));
+                        },
+                        sort: function(data, type, task) {
+                            return data ? moment(data).valueOf() : 0;
+                        }
+                    }
+                },
+                {
+                    title: "Date&nbsp;Started",
+                    data: "dateStarted",
+                    searchable: false,
+                    visible: isInProgress || isInReview || isCompleted,
+                    render: {
+                        _: function(data, type, task) {
+                            return that.formatSpaces(that.formatDate(data, "Not&nbsp;Started"));
+                        },
+                        sort: function(data, type, task) {
+                            return data ? moment(data).valueOf() : 0;
+                        }
+                    }
+                },
+                {
+                    title: "Submitted&nbsp;Date",
+                    data: "dateSentForReview",
+                    searchable: false,
+                    visible: isInReview,
+                    render: {
+                        _: function(data, type, task) {
+                            return that.formatSpaces(that.formatDate(data, "Not&nbsp;Submitted"));
+                        },
+                        sort: function(data, type, task) {
+                            return data ? moment(data).valueOf() : 0;
+                        }
+                    }
+                },
+                {
+                    title: "Completed&nbsp;Date",
+                    data: "dateCompleted",
+                    searchable: false,
+                    visible: isCompleted,
+                    render: {
+                        _: function(data, type, task) {
+                            return that.formatSpaces(that.formatDate(data, "Not&nbsp;Completed"));
+                        },
+                        sort: function(data, type, task) {
+                            return data ? moment(data).valueOf() : 0;
+                        }
+                    }
+                },
+                {
+                    title: "Deadline",
+                    data: "deadline",
+                    searchable: false,
+                    visible: isNotStarted || isInProgress,
+                    render: {
+                        _: function(data, type, task) {
+                            return that.formatSpaces(that.formatDate(data, "No&nbsp;Deadline"));
+                        },
+                        sort: function(data, type, task) {
+                            return data ? moment(data).valueOf() : 0;
+                        }
+                    }
+                },
+                {
+                    title: "Actions",
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, task) {
+                        var html = "";
+                        if (task.status === "Completed" || task.status === "In Review") {
+                            html += ` <a href="/admin/tasks/reopen?id=${task.id}" class="btn btn-sm btn-warning">Reopen</a>`;
+                        }
+                        if (task.status === "In Review") {
+                            html += ` <a href="/admin/tasks/complete?id=${task.id}" class="btn btn-sm btn-warning">Complete</a>`;
+                        }
+                        html += ` <a href="/admin/tasks/edit?id=${task.id}" class="btn btn-sm btn-primary">Edit</a>`;
+                        html += ` <a href="/admin/tasks/delete?id=${task.id}" class="btn btn-sm btn-danger">Delete</a>`;
+                        return html;
+                    }
+                }
+            ];
             table = $(".table").DataTable({
                 data: that.$data.tasks[that.$data.currentTasks],
-                language: {
-                    emptyTable: "There are currently no tasks in this status"
-                },
+                columns: tableColumns,
                 createdRow: function(row, data, index) {
                     $("td", row).first().addClass("expandable").addClass("text-center");
                     $("td", row).last().addClass("text-center").css("white-space", "nowrap");
                     $("td", row).addClass("td-fixed-width");
                     $("td", row).eq(1).removeClass("td-fixed-width");
                 },
-                columns: [
-                    {
-                        title: "",
-                        render: function(data, type, task) {
-                            return `<i class="fa fa-plus"></i><i class="fa fa-minus"></i>`
-                        }
-                    },
-                    {
-                        title: "Title",
-                        data: "title"
-                    },
-                    {
-                        title: "Assigned&nbsp;To",
-                        data: "assignee",
-                        render: function(data, type, task) {
-                            return that.formatSpaces(that.formatUser(data, that.$data.users, "Unassigned"));
-                        }
-                    },
-                    {
-                        title: "Status",
-                        data: "status",
-                        render: function(data, type, task) {
-                            return that.formatSpaces(data);
-                        }
-                    },
-                    {
-                        title: "Deadline",
-                        data: "deadline",
-                        render: function(data, type, task) {
-                            return that.formatSpaces(that.formatDate(data, "No&nbsp;Deadline"));
-                        }
-                    },
-                    {
-                        title: "Actions",
-                        render: function(data, type, task) {
-                            var html = "";
-                            if (task.status === "Completed" || task.status === "In Review") {
-                                html += ` <a href="/admin/tasks/reopen?id=${task.id}" class="btn btn-sm btn-warning">Reopen Task</a>`;
-                            }
-                            if (task.status === "In Review") {
-                                html += ` <a href="/admin/tasks/complete?id=${task.id}" class="btn btn-sm btn-warning">Complete Task</a>`;
-                            }
-                            html += ` <a href="/admin/tasks/edit?id=${task.id}" class="btn btn-sm btn-primary">Edit Task</a>`;
-                            html += ` <a href="/admin/tasks/delete?id=${task.id}" class="btn btn-sm btn-danger">Delete Task</a>`;
-                            return html;
-                        }
-                    }
-                ],
+                language: {
+                    emptyTable: "There are currently no tasks in this status"
+                },
                 lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "All"]],
-                ordering: false
+                order: [[4, "desc"]]
             });
         };
         that.$nextTick(function() {

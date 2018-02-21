@@ -16,7 +16,7 @@ function adminTasksEditGetHelper(req: express.Request, res: express.Response, db
         homeGet(req, res, db);
         return;
     }
-    const task: any = db.get("tasks").find({ id: taskId }).value() || { };
+    const task: any = db.get("tasks").find({ id: taskId }).value() || { id: "" };
     task.assignee = task.assignee || "";
     const users = db.get("users").value();
     const customFields = db.get("customFields").value();

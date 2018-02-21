@@ -17,7 +17,7 @@ function adminUsersEditGetHelper(req: express.Request, res: express.Response, db
         homeGet(req, res, db);
         return;
     }
-    const user: any = db.get("users").find({ id: userId }).value() || { };
+    const user: any = db.get("users").find({ id: userId }).value() || { id: "" };
     user.maxTasks = user.maxTasks || 100;
     const data = {
         error: error || "",
@@ -71,7 +71,7 @@ export function adminUsersEditPost(req: express.Request, res: express.Response, 
         username: req.body.username,
         password: password,
         maxTasks: utils.coerceInt(req.body.maxTasks) || 100,
-        isAdmin: !!req.body.isAdmin || (existingUser && existingUser.isRoot),
+        isAdmin: !!req.body.isAdmin || (existingUser ? existingUser.isRoot : false),
         isRoot: existingUser ? existingUser.isRoot : false
     };
     if (existingUser) {
