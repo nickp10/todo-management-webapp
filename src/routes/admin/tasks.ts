@@ -21,13 +21,13 @@ export function adminTasksGet(req: express.Request, res: express.Response, db: l
     const data = {
         users: users,
         customFields: customFields,
-        currentTasks: req.session.user.adminCurrentTasksTab || "#notStarted",
+        currentTasks: req.session.user.adminCurrentTasksTab || "Not Started",
         tasksPerPage: req.session.user.adminTasksPerPage || 10,
         tasks: {
-            "#notStarted": tasks.filter(t => t.status === "Not Started"),
-            "#inProgress": tasks.filter(t => t.status === "In Progress"),
-            "#inReview": tasks.filter(t => t.status === "In Review"),
-            "#completed": tasks.filter(t => t.status === "Completed")
+            "Not Started": tasks.filter(t => t.status === "Not Started"),
+            "In Progress": tasks.filter(t => t.status === "In Progress"),
+            "In Review": tasks.filter(t => t.status === "In Review"),
+            "Completed": tasks.filter(t => t.status === "Completed")
         },
         nav: {
             isTasks: true
@@ -141,6 +141,9 @@ export function adminTasksSetCurrentTasks(req: express.Request, res: express.Res
     }
     req.session.user.adminCurrentTasksTab = req.query.currentTasks;
     db.get("users").find({ id: req.session.user.id }).assign({ adminCurrentTasksTab: req.session.user.adminCurrentTasksTab }).write();
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
     res.sendStatus(200);
 }
 
@@ -151,5 +154,8 @@ export function adminTasksSetTasksPerPage(req: express.Request, res: express.Res
     }
     req.session.user.adminTasksPerPage = utils.coerceInt(req.query.tasksPerPage);
     db.get("users").find({ id: req.session.user.id }).assign({ adminTasksPerPage: req.session.user.adminTasksPerPage }).write();
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
     res.sendStatus(200);
 }

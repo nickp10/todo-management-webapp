@@ -23,16 +23,16 @@
                     </div>
                     <ul class="nav nav-tabs" id="statusTabs" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link" id="notStarted" data-toggle="tab" href="#notStarted" role="tab" aria-controls="notStarted" aria-selected="false">Not Started</a>
+                            <a class="nav-link" href="#" data-toggle="tab" data-status="Not Started" role="tab">Not Started</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="inProgress" data-toggle="tab" href="#inProgress" role="tab" aria-controls="inProgress" aria-selected="false">In Progress</a>
+                            <a class="nav-link" href="#" data-toggle="tab" data-status="In Progress" role="tab">In Progress</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="inReview" data-toggle="tab" href="#inReview" role="tab" aria-controls="inReview" aria-selected="false">In Review</a>
+                            <a class="nav-link" href="#" data-toggle="tab" data-status="In Review" role="tab">In Review</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="completed" data-toggle="tab" href="#completed" role="tab" aria-controls="completed" aria-selected="false">Completed</a>
+                            <a class="nav-link" href="#" data-toggle="tab" data-status="Completed" role="tab">Completed</a>
                         </li>
                     </ul>
                     <table class="table table-sm table-hover table-bordered table-striped"></table>
@@ -115,6 +115,14 @@ export default {
     mounted: function() {
         var that = this;
         var table = undefined;
+        var tabState = { };
+        var recalculateTabState = function() {
+            tabState.isNotStarted = that.$data.currentTasks === "Not Started";
+            tabState.isInProgress = that.$data.currentTasks === "In Progress";
+            tabState.isInReview = that.$data.currentTasks === "In Review";
+            tabState.isCompleted = that.$data.currentTasks === "Completed";
+        };
+        recalculateTabState();
         var getElementsInBetween = function(from, to) {
             if (from.index() > to.index()) {
                 var tmp = from;
@@ -131,12 +139,8 @@ export default {
             return table.rows(".selected").data().map(function(item) { return item.id; }).join(",");
         };
         var createTable = function() {
-            var isNotStarted = that.$data.currentTasks === "#notStarted";
-            var isInProgress = that.$data.currentTasks === "#inProgress";
-            var isInReview = that.$data.currentTasks === "#inReview";
-            var isCompleted = that.$data.currentTasks === "#completed";
-            $(".reopen-selected").toggle(isInReview || isCompleted);
-            $(".complete-selected").toggle(isInReview);
+            $(".reopen-selected").toggle(tabState.isInReview || tabState.isCompleted);
+            $(".complete-selected").toggle(tabState.isInReview);
             $(".selected-action").toggleClass("disabled", true);
             table = $(".table").DataTable({
                 data: that.$data.tasks[that.$data.currentTasks],
@@ -188,7 +192,7 @@ export default {
                         title: "Date&nbsp;Started",
                         data: "dateStarted",
                         searchable: false,
-                        visible: isInProgress || isInReview || isCompleted,
+                        visible: tabState.isInProgress || tabState.isInReview || tabState.isCompleted,
                         render: {
                             _: function(data, type, task) {
                                 return that.formatSpaces(that.formatDate(data, "Not&nbsp;Started"));
@@ -202,7 +206,7 @@ export default {
                         title: "Submitted&nbsp;Date",
                         data: "dateSentForReview",
                         searchable: false,
-                        visible: isInReview,
+                        visible: tabState.isInReview,
                         render: {
                             _: function(data, type, task) {
                                 return that.formatSpaces(that.formatDate(data, "Not&nbsp;Submitted"));
@@ -216,7 +220,7 @@ export default {
                         title: "Completed&nbsp;Date",
                         data: "dateCompleted",
                         searchable: false,
-                        visible: isCompleted,
+                        visible: tabState.isCompleted,
                         render: {
                             _: function(data, type, task) {
                                 return that.formatSpaces(that.formatDate(data, "Not&nbsp;Completed"));
@@ -230,7 +234,7 @@ export default {
                         title: "Deadline",
                         data: "deadline",
                         searchable: false,
-                        visible: isNotStarted || isInProgress,
+                        visible: tabState.isNotStarted || tabState.isInProgress,
                         render: {
                             _: function(data, type, task) {
                                 return that.formatSpaces(that.formatDate(data, "No&nbsp;Deadline"));
@@ -291,7 +295,8 @@ export default {
                 if (table) {
                     table.destroy();
                 }
-                that.$data.currentTasks = $(e.target).attr("href");
+                that.$data.currentTasks = $(e.target).data("status");
+                recalculateTabState();
                 $.ajax({
                     url: "/admin/tasks/setCurrentTasks",
                     type: "get",
@@ -304,7 +309,7 @@ export default {
                     createTable();
                 });
             });
-            $(that.$data.currentTasks).tab("show");
+            $(`a[data-status="${that.$data.currentTasks}"`).tab("show");
             $(document).on("click", ".table td.expandable", function () {
                 var tr = $(this).closest("tr");
                 var row = table.row(tr);
