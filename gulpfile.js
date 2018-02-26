@@ -1,14 +1,12 @@
 const argv = require("argv");
+const babel = require("gulp-babel");
 const gulp = require("gulp");
-const uglify = require("gulp-uglify");
 const path = require("path");
 const rename = require("gulp-rename");
 const sourcemaps = require("gulp-sourcemaps");
 const typescript = require("gulp-typescript");
+const uglify = require("gulp-uglify");
 
-const args = argv
-    .option({ name: "env", short: "e", type: "string" })
-    .run();
 const assetsCSS = [
     "./node_modules/bootstrap/dist/css/*.min.css",
     "./node_modules/font-awesome/css/font-awesome.min.css",
@@ -29,8 +27,10 @@ const assetsJS = [
     "./node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"
 ];
 const vueFiles = ["./src/**/*.vue"];
+const args = argv.option({ name: "env", short: "e", type: "string" }).run();
 const isDebug = args.options["env"] === "debug";
-const dest = isDebug ? "./debug" : "./build";
+const destDirname = isDebug ? "debug" : "build";
+const dest = `./${destDirname}`;
 const tsconfig = typescript("tsconfig.json");
 
 function formatPrefix(num) {
@@ -76,14 +76,19 @@ gulp.task("compile", () => {
         return src.pipe(sourcemaps.init())
             .pipe(tsconfig)
             .pipe(sourcemaps.mapSources((sourcePath, file) => {
-                var from = path.dirname(file.path);
-                var to = path.resolve(path.join(__dirname, "build"));
-                return path.join(path.relative(from, to), sourcePath);
+                const to = path.dirname(file.path);
+                const buildToRoot = path.relative(to, __dirname);
+                const rootToSource = path.relative(__dirname, to);
+                const fileName = path.basename(sourcePath);
+                return path.join(buildToRoot, rootToSource, fileName);
             }))
             .pipe(sourcemaps.write(""))
             .pipe(gulp.dest(dest));
     } else {
         return src.pipe(tsconfig)
+            .pipe(babel({
+                presets: ["env"]
+            }))
             .pipe(uglify())
             .pipe(gulp.dest(dest));
     }

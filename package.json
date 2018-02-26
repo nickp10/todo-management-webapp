@@ -65,6 +65,7 @@
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-typescript": "^4.0.1",

@@ -3,7 +3,6 @@
     "removeComments": true,
     "module": "commonjs",
     "newLine": "LF",
-    "outDir": "build/",
-    "target": "es5"
+    "target": "es6"
   }
 }
