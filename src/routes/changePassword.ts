@@ -6,7 +6,7 @@ import * as uuid4 from "uuid/v4";
 import { homeGet } from "./home";
 import { loginGet } from "./login";
 
-function changePasswordGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, error?: string) {
+function changePasswordGetHelper(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>, error?: string) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -20,11 +20,11 @@ function changePasswordGetHelper(req: express.Request, res: express.Response, db
     (<any>res).renderVue("changePassword", data, vueOptions);
 };
 
-export function changePasswordGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function changePasswordGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     changePasswordGetHelper(req, res, db);
 }
 
-export function changePasswordPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function changePasswordPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;

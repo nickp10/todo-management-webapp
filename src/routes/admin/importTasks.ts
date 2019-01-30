@@ -8,7 +8,7 @@ import { adminTasksGet } from "./tasks";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-export function adminTasksImportGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksImportGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -32,7 +32,7 @@ export function adminTasksImportGet(req: express.Request, res: express.Response,
     (<any>res).renderVue("admin/importTasks", data, vueOptions);
 };
 
-export function adminTasksImportPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksImportPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;

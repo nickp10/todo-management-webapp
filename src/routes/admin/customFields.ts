@@ -5,7 +5,7 @@ import * as uuid4 from "uuid/v4";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-export function adminCustomFieldsGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminCustomFieldsGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -29,7 +29,7 @@ export function adminCustomFieldsGet(req: express.Request, res: express.Response
     (<any>res).renderVue("admin/customFields", data, vueOptions);
 };
 
-export function adminCustomFieldsPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminCustomFieldsPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -46,7 +46,7 @@ export function adminCustomFieldsPost(req: express.Request, res: express.Respons
     adminCustomFieldsGet(req, res, db);
 };
 
-export function adminCustomFieldsDelete(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminCustomFieldsDelete(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;

@@ -4,7 +4,7 @@ import * as lowdb from "lowdb";
 import * as moment from "moment";
 import { loginGet } from "./login";
 
-export function homeGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function homeGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;

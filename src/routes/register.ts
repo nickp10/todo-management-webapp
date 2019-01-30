@@ -5,7 +5,7 @@ import * as lowdb from "lowdb";
 import * as uuid4 from "uuid/v4";
 import { homeGet } from "./home";
 
-function registerGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, error?: string) {
+function registerGetHelper(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>, error?: string) {
     if (req.session.user) {
         homeGet(req, res, db);
         return;
@@ -19,11 +19,11 @@ function registerGetHelper(req: express.Request, res: express.Response, db: lowd
     (<any>res).renderVue("register", data, vueOptions);
 };
 
-export function registerGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function registerGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     registerGetHelper(req, res, db);
 }
 
-export function registerPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function registerPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (req.session.user) {
         homeGet(req, res, db);
         return;

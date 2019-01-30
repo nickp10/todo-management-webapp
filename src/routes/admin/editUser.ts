@@ -8,7 +8,7 @@ import { adminUsersGet } from "./users";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-function adminUsersEditGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, userId: string, error?: string) {
+function adminUsersEditGetHelper(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>, userId: string, error?: string) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -17,7 +17,7 @@ function adminUsersEditGetHelper(req: express.Request, res: express.Response, db
         homeGet(req, res, db);
         return;
     }
-    const user: any = db.get("users").find({ id: userId }).value() || { id: "" };
+    const user: any = <User>db.get("users").find({ id: userId }).value() || { id: "" };
     user.maxTasks = user.maxTasks || 100;
     const data = {
         error: error || "",
@@ -34,11 +34,11 @@ function adminUsersEditGetHelper(req: express.Request, res: express.Response, db
     (<any>res).renderVue("admin/editUser", data, vueOptions);
 };
 
-export function adminUsersEditGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminUsersEditGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     adminUsersEditGetHelper(req, res, db, req.query.id);
 }
 
-export function adminUsersEditPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminUsersEditPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -47,7 +47,7 @@ export function adminUsersEditPost(req: express.Request, res: express.Response, 
         homeGet(req, res, db);
         return;
     }
-    const existingUser = db.get("users").find({ id: req.query.id }).value();
+    const existingUser = <User>db.get("users").find({ id: req.query.id }).value();
     let password = "";
     if (existingUser) {
         password = existingUser.password;

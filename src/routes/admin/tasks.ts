@@ -6,7 +6,7 @@ import * as utils from "../../utils";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-export function adminTasksGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -41,7 +41,7 @@ export function adminTasksGet(req: express.Request, res: express.Response, db: l
     (<any>res).renderVue("admin/tasks", data, vueOptions);
 };
 
-export function adminTasksDelete(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksDelete(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -54,7 +54,7 @@ export function adminTasksDelete(req: express.Request, res: express.Response, db
     adminTasksGet(req, res, db);
 };
 
-export function adminTasksDeleteMany(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksDeleteMany(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -72,7 +72,7 @@ export function adminTasksDeleteMany(req: express.Request, res: express.Response
     adminTasksGet(req, res, db);
 };
 
-export function adminTasksComplete(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksComplete(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -85,7 +85,7 @@ export function adminTasksComplete(req: express.Request, res: express.Response, 
     adminTasksGet(req, res, db);
 };
 
-export function adminTasksCompleteMany(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksCompleteMany(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -103,7 +103,7 @@ export function adminTasksCompleteMany(req: express.Request, res: express.Respon
     adminTasksGet(req, res, db);
 };
 
-export function adminTasksReopen(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksReopen(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -116,7 +116,7 @@ export function adminTasksReopen(req: express.Request, res: express.Response, db
     adminTasksGet(req, res, db);
 };
 
-export function adminTasksReopenMany(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksReopenMany(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -134,7 +134,7 @@ export function adminTasksReopenMany(req: express.Request, res: express.Response
     adminTasksGet(req, res, db);
 };
 
-export function adminTasksSetCurrentTasks(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksSetCurrentTasks(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user || !req.session.user.isAdmin) {
         res.sendStatus(403);
         return;
@@ -147,7 +147,7 @@ export function adminTasksSetCurrentTasks(req: express.Request, res: express.Res
     res.sendStatus(200);
 }
 
-export function adminTasksSetTasksPerPage(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksSetTasksPerPage(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user || !req.session.user.isAdmin) {
         res.sendStatus(403);
         return;

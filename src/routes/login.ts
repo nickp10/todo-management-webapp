@@ -4,7 +4,7 @@ import * as express from "express";
 import * as lowdb from "lowdb";
 import { homeGet } from "./home";
 
-export function loginGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function loginGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (req.session.user) {
         homeGet(req, res, db);
         return;
@@ -18,7 +18,7 @@ export function loginGet(req: express.Request, res: express.Response, db: lowdb.
     (<any>res).renderVue("login", data, vueOptions);
 };
 
-export function loginPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function loginPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (req.session.user) {
         homeGet(req, res, db);
         return;

@@ -1,4 +1,4 @@
-import { DBSchema, Task } from "../../interfaces";
+import { DBSchema, Task, User } from "../../interfaces";
 import * as express from "express";
 import * as lowdb from "lowdb";
 import * as moment from "moment";
@@ -7,7 +7,7 @@ import { adminTasksGet } from "./tasks";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-function adminTasksReassignManyGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, taskIds: string, error?: string) {
+function adminTasksReassignManyGetHelper(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>, taskIds: string, error?: string) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -33,11 +33,11 @@ function adminTasksReassignManyGetHelper(req: express.Request, res: express.Resp
     (<any>res).renderVue("admin/reassignManyTasks", data, vueOptions);
 }
 
-export function adminTasksReassignManyGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksReassignManyGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     adminTasksReassignManyGetHelper(req, res, db, req.query.ids);
 };
 
-export function adminTasksReassignManyPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksReassignManyPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -49,9 +49,9 @@ export function adminTasksReassignManyPost(req: express.Request, res: express.Re
     const taskIds = req.query.ids.split(",");
     let error = "";
     let assigneeValue = req.body.assignee;
-    const assignee = db.get("users").find({ id: assigneeValue }).value();
+    const assignee = <User>db.get("users").find({ id: assigneeValue }).value();
     if (assignee) {
-        const assigneeTasks = db.get("tasks").filter({ assignee: assignee.id }).value();
+        const assigneeTasks = <Task[]>db.get("tasks").filter({ assignee: assignee.id }).value();
         const newTaskIds = [];
         for (let i = 0; i < taskIds.length; i++) {
             const taskId = taskIds[i];

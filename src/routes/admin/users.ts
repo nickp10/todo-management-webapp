@@ -4,7 +4,7 @@ import * as lowdb from "lowdb";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-export function adminUsersGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminUsersGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -28,7 +28,7 @@ export function adminUsersGet(req: express.Request, res: express.Response, db: l
     (<any>res).renderVue("admin/users", data, vueOptions);
 };
 
-export function adminUsersDelete(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminUsersDelete(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;

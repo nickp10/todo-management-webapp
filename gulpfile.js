@@ -63,7 +63,7 @@ gulp.task("copy-js", () => {
         .pipe(gulp.dest(`${dest}/assets/js`));
 });
 
-gulp.task("copy-assets", ["copy-css", "copy-fonts", "copy-js"]);
+gulp.task("copy-assets", gulp.series("copy-css", "copy-fonts", "copy-js"));
 
 gulp.task("copy-vue", () => {
     return gulp.src(vueFiles, { base: "./src" })
@@ -87,11 +87,11 @@ gulp.task("compile", () => {
     } else {
         return src.pipe(tsconfig)
             .pipe(babel({
-                presets: ["env"]
+                presets: ["@babel/preset-env"]
             }))
             .pipe(uglify())
             .pipe(gulp.dest(dest));
     }
 });
 
-gulp.task("build", ["compile", "copy-assets", "copy-vue"]);
+gulp.task("build", gulp.series("compile", "copy-assets", "copy-vue"));

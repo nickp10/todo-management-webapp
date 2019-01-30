@@ -4,7 +4,7 @@ import * as lowdb from "lowdb";
 import { homeGet } from "./home";
 import { loginGet } from "./login";
 
-export function sendForReviewGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function sendForReviewGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;

@@ -1,4 +1,4 @@
-import { DBSchema, Task } from "../../interfaces";
+import { DBSchema, Task, User } from "../../interfaces";
 import * as express from "express";
 import * as lowdb from "lowdb";
 import * as moment from "moment";
@@ -7,7 +7,7 @@ import { adminTasksGet } from "./tasks";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
-function adminTasksEditGetHelper(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>, taskId: string, error?: string) {
+function adminTasksEditGetHelper(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>, taskId: string, error?: string) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -37,11 +37,11 @@ function adminTasksEditGetHelper(req: express.Request, res: express.Response, db
     (<any>res).renderVue("admin/editTask", data, vueOptions);
 }
 
-export function adminTasksEditGet(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksEditGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     adminTasksEditGetHelper(req, res, db, req.query.id);
 };
 
-export function adminTasksEditPost(req: express.Request, res: express.Response, db: lowdb.Lowdb<DBSchema, lowdb.AdapterAsync>) {
+export function adminTasksEditPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
     if (!req.session.user) {
         loginGet(req, res, db);
         return;
@@ -50,10 +50,10 @@ export function adminTasksEditPost(req: express.Request, res: express.Response, 
         homeGet(req, res, db);
         return;
     }
-    const existingTask = db.get("tasks").find({ id: req.query.id }).value();
+    const existingTask = <Task>db.get("tasks").find({ id: req.query.id }).value();
     let error = "";
     let assigneeValue = req.body.assignee;
-    const assignee = db.get("users").find({ id: assigneeValue }).value();
+    const assignee = <User>db.get("users").find({ id: assigneeValue }).value();
     if (assignee) {
         const assigneeTasks = db.get("tasks").filter({ assignee: assignee.id }).value();
         if (!existingTask || existingTask.assignee !== assignee.id) {
