@@ -9,6 +9,6 @@ export function sendForReviewGet(req: express.Request, res: express.Response, db
         loginGet(req, res, db);
         return;
     }
-    db.get("tasks").find({ id: req.query.id }).assign({ dateSentForReview: new Date(), status: "In Review" }).write();
+    db.get("tasks").find({ id: <string>req.query.id }).assign({ dateSentForReview: new Date(), status: "In Review" }).write();
     homeGet(req, res, db);
 };

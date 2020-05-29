@@ -2,7 +2,7 @@ import { DBSchema, Task, User } from "../../interfaces";
 import * as express from "express";
 import * as lowdb from "lowdb";
 import * as moment from "moment";
-import * as uuid4 from "uuid/v4";
+import { v4 as uuid4 } from "uuid";
 import { adminTasksGet } from "./tasks";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
@@ -38,7 +38,7 @@ function adminTasksEditGetHelper(req: express.Request, res: express.Response, db
 }
 
 export function adminTasksEditGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
-    adminTasksEditGetHelper(req, res, db, req.query.id);
+    adminTasksEditGetHelper(req, res, db, <string>req.query.id);
 };
 
 export function adminTasksEditPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
@@ -50,7 +50,7 @@ export function adminTasksEditPost(req: express.Request, res: express.Response, 
         homeGet(req, res, db);
         return;
     }
-    const existingTask = <Task>db.get("tasks").find({ id: req.query.id }).value();
+    const existingTask = <Task>db.get("tasks").find({ id: <string>req.query.id }).value();
     let error = "";
     let assigneeValue = req.body.assignee;
     const assignee = <User>db.get("users").find({ id: assigneeValue }).value();
@@ -79,7 +79,7 @@ export function adminTasksEditPost(req: express.Request, res: express.Response, 
         updatedTask[customField.id] = req.body[customField.id];
     }
     if (existingTask) {
-        db.get("tasks").find({ id: req.query.id }).assign(updatedTask).write();
+        db.get("tasks").find({ id: <string>req.query.id }).assign(updatedTask).write();
     } else {
         db.get("tasks").push(updatedTask).write();
     }

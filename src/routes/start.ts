@@ -9,6 +9,6 @@ export function startGet(req: express.Request, res: express.Response, db: lowdb.
         loginGet(req, res, db);
         return;
     }
-    db.get("tasks").find({ id: req.query.id }).assign({ dateStarted: new Date(), status: "In Progress" }).write();
+    db.get("tasks").find({ id: <string>req.query.id }).assign({ dateStarted: new Date(), status: "In Progress" }).write();
     homeGet(req, res, db);
 };

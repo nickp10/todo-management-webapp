@@ -13,7 +13,7 @@ import * as fs from "fs";
 import * as lowdb from "lowdb";
 import * as path from "path";
 import * as process from "process";
-import * as uuid4 from "uuid/v4";
+import { v4 as uuid4 } from "uuid";
 import { adminCustomFieldsGet, adminCustomFieldsPost, adminCustomFieldsDelete } from "./routes/admin/customFields";
 import { adminTasksEditGet, adminTasksEditPost } from "./routes/admin/editTask";
 import { adminTasksGet, adminTasksDelete, adminTasksDeleteMany, adminTasksComplete, adminTasksReopen, adminTasksSetCurrentTasks, adminTasksSetTasksPerPage, adminTasksCompleteMany, adminTasksReopenMany } from "./routes/admin/tasks";

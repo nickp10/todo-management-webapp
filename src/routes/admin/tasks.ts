@@ -50,7 +50,7 @@ export function adminTasksDelete(req: express.Request, res: express.Response, db
         homeGet(req, res, db);
         return;
     }
-    db.get("tasks").remove({ id: req.query.id }).write();
+    db.get("tasks").remove({ id: <string>req.query.id }).write();
     adminTasksGet(req, res, db);
 };
 
@@ -63,7 +63,8 @@ export function adminTasksDeleteMany(req: express.Request, res: express.Response
         homeGet(req, res, db);
         return;
     }
-    const ids = req.query.ids.split(",");
+    const rids = <string>req.query.ids;
+    const ids = rids.split(",");
     for (let i = 0; i < ids.length; i++) {
         const id = ids[i];
         db.get("tasks").remove({ id: id }).value();
@@ -81,7 +82,7 @@ export function adminTasksComplete(req: express.Request, res: express.Response, 
         homeGet(req, res, db);
         return;
     }
-    db.get("tasks").find({ id: req.query.id }).assign({ dateCompleted: new Date(), status: "Completed", completedBy: req.session.user.id }).write();
+    db.get("tasks").find({ id: <string>req.query.id }).assign({ dateCompleted: new Date(), status: "Completed", completedBy: req.session.user.id }).write();
     adminTasksGet(req, res, db);
 };
 
@@ -94,7 +95,8 @@ export function adminTasksCompleteMany(req: express.Request, res: express.Respon
         homeGet(req, res, db);
         return;
     }
-    const ids = req.query.ids.split(",");
+    const rids = <string>req.query.ids;
+    const ids = rids.split(",");
     for (let i = 0; i < ids.length; i++) {
         const id = ids[i];
         db.get("tasks").find({ id: id }).assign({ dateCompleted: new Date(), status: "Completed", completedBy: req.session.user.id }).value();
@@ -112,7 +114,7 @@ export function adminTasksReopen(req: express.Request, res: express.Response, db
         homeGet(req, res, db);
         return;
     }
-    db.get("tasks").find({ id: req.query.id }).assign({ dateStarted: "", dateCompleted: "", dateSentForReview: "", completedBy: "", status: "Not Started" }).write();
+    db.get("tasks").find({ id: <string>req.query.id }).assign({ dateStarted: "", dateCompleted: "", dateSentForReview: "", completedBy: "", status: "Not Started" }).write();
     adminTasksGet(req, res, db);
 };
 
@@ -125,7 +127,8 @@ export function adminTasksReopenMany(req: express.Request, res: express.Response
         homeGet(req, res, db);
         return;
     }
-    const ids = req.query.ids.split(",");
+    const rids = <string>req.query.ids;
+    const ids = rids.split(",");
     for (let i = 0; i < ids.length; i++) {
         const id = ids[i];
         db.get("tasks").find({ id: id }).assign({ dateStarted: "", dateCompleted: "", dateSentForReview: "", completedBy: "", status: "Not Started" }).value();
@@ -152,7 +155,7 @@ export function adminTasksSetTasksPerPage(req: express.Request, res: express.Res
         res.sendStatus(403);
         return;
     }
-    req.session.user.adminTasksPerPage = utils.coerceInt(req.query.tasksPerPage);
+    req.session.user.adminTasksPerPage = utils.coerceInt(<string>req.query.tasksPerPage);
     db.get("users").find({ id: req.session.user.id }).assign({ adminTasksPerPage: req.session.user.adminTasksPerPage }).write();
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     res.setHeader("Pragma", "no-cache");

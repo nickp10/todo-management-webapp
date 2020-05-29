@@ -2,7 +2,7 @@ import { DBSchema, Task, User } from "../../interfaces";
 import * as express from "express";
 import * as lowdb from "lowdb";
 import * as moment from "moment";
-import * as uuid4 from "uuid/v4";
+import { v4 as uuid4 } from "uuid";
 import { adminTasksGet } from "./tasks";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
@@ -34,7 +34,7 @@ function adminTasksReassignManyGetHelper(req: express.Request, res: express.Resp
 }
 
 export function adminTasksReassignManyGet(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
-    adminTasksReassignManyGetHelper(req, res, db, req.query.ids);
+    adminTasksReassignManyGetHelper(req, res, db, <string>req.query.ids);
 };
 
 export function adminTasksReassignManyPost(req: express.Request, res: express.Response, db: lowdb.LowdbAsync<DBSchema>) {
@@ -46,7 +46,8 @@ export function adminTasksReassignManyPost(req: express.Request, res: express.Re
         homeGet(req, res, db);
         return;
     }
-    const taskIds = req.query.ids.split(",");
+    const ids = <string>req.query.ids;
+    const taskIds = ids.split(",");
     let error = "";
     let assigneeValue = req.body.assignee;
     const assignee = <User>db.get("users").find({ id: assigneeValue }).value();
@@ -69,7 +70,7 @@ export function adminTasksReassignManyPost(req: express.Request, res: express.Re
         }
         if (assignee.maxTasks < assigneeTasks.length + newTaskIds.length) {
             error = "The assigned user cannot be assigned to all the selected tasks since they will exceed the maximum number of tasks assigned to them.";
-            adminTasksReassignManyGetHelper(req, res, db, req.query.ids, error);
+            adminTasksReassignManyGetHelper(req, res, db, ids, error);
             return;
         }
     }

@@ -3,7 +3,7 @@ import * as express from "express";
 import * as expressFileUpload from "express-fileupload";
 import * as lowdb from "lowdb";
 import * as moment from "moment";
-import * as uuid4 from "uuid/v4";
+import { v4 as uuid4 } from "uuid";
 import { adminTasksGet } from "./tasks";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
@@ -43,7 +43,7 @@ export function adminTasksImportPost(req: express.Request, res: express.Response
     }
     if (req.files && req.files.importFile) {
         const file = <expressFileUpload.UploadedFile>req.files.importFile;
-        const data = file.data.toString("UTF8");
+        const data = file.data.toString("utf8");
         if (data) {
             const customFields = db.get("customFields").value();
             const rows = parseCSVFile(data);

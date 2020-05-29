@@ -2,7 +2,7 @@ import { DBSchema, User } from "../interfaces";
 import * as crypto from "crypto-js";
 import * as express from "express";
 import * as lowdb from "lowdb";
-import * as uuid4 from "uuid/v4";
+import { v4 as uuid4 } from "uuid";
 import { homeGet } from "./home";
 import { loginGet } from "./login";
 

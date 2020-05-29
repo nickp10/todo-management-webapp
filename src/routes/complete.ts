@@ -9,6 +9,6 @@ export function completeGet(req: express.Request, res: express.Response, db: low
         loginGet(req, res, db);
         return;
     }
-    db.get("tasks").find({ id: req.query.id }).assign({ dateCompleted: new Date(), status: "Completed", completedBy: req.session.user.id }).write();
+    db.get("tasks").find({ id: <string>req.query.id }).assign({ dateCompleted: new Date(), status: "Completed", completedBy: req.session.user.id }).write();
     homeGet(req, res, db);
 };

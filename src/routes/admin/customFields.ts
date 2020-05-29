@@ -1,7 +1,7 @@
 import { DBSchema, Field } from "../../interfaces";
 import * as express from "express";
 import * as lowdb from "lowdb";
-import * as uuid4 from "uuid/v4";
+import { v4 as uuid4 } from "uuid";
 import { homeGet } from "../home";
 import { loginGet } from "../login";
 
@@ -55,6 +55,6 @@ export function adminCustomFieldsDelete(req: express.Request, res: express.Respo
         homeGet(req, res, db);
         return;
     }
-    db.get("customFields").remove({ id: req.query.id }).write();
+    db.get("customFields").remove({ id: <string>req.query.id }).write();
     adminCustomFieldsGet(req, res, db);
 };

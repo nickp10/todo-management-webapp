@@ -9,6 +9,6 @@ export function saveNotesPost(req: express.Request, res: express.Response, db: l
         loginGet(req, res, db);
         return;
     }
-    db.get("tasks").find({ id: req.query.id }).assign({ notes: req.body.notes }).write();
+    db.get("tasks").find({ id: <string>req.query.id }).assign({ notes: req.body.notes }).write();
     homeGet(req, res, db);
 };

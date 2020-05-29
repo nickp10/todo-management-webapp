@@ -37,6 +37,6 @@ export function adminUsersDelete(req: express.Request, res: express.Response, db
         homeGet(req, res, db);
         return;
     }
-    db.get("users").remove({ id: req.query.id }).write();
+    db.get("users").remove({ id: <string>req.query.id }).write();
     adminUsersGet(req, res, db);
 };
