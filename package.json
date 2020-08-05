@@ -38,7 +38,7 @@
     "crypto-js": "^4.0.0",
     "datatables.net-bs4": "^1.10.21",
     "express": "^4.17.1",
-    "express-fileupload": "^1.1.6",
+    "express-fileupload": "^1.1.9",
     "express-session": "^1.17.1",
     "express-vue": "^5.15.1",
     "font-awesome": "^4.7.0",
