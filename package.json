@@ -43,7 +43,7 @@
     "express-vue": "^5.15.1",
     "font-awesome": "^4.7.0",
     "jquery": "^3.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "lowdb": "^1.0.0",
     "memorystore": "^1.6.2",
     "mkdirp": "^1.0.4",
